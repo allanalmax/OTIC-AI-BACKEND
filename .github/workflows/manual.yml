@@ -1,0 +1,23 @@
+name: Run Docker Container
+
+on:
+  push:
+    branches:
+      - main
+      - master
+            
+jobs:
+  run-docker-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Configure Docker
+        run: |
+         docker login --username=ubteb --password=123456789
+  
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ubteb/somesai-personalized-learning:latest 

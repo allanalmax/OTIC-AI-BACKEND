@@ -1,12 +1,14 @@
 body{
     background: #fafafa;
 }
+
+/*LOGIN*/
 .login{
     background: white;
     width: 60%;
     height: 35em;
     margin: auto;
-    margin-top: 2.5em;
+    margin-top: 2.3em;
 }
 
 form{
@@ -29,7 +31,14 @@ form button{
     margin: auto;
 }
 
-h1{
+h1,h2{
     display: flex;
     justify-content: center;
 }
+
+span{
+    display: flex;
+    justify-content: center;
+}
+
+/*REGISTER*/

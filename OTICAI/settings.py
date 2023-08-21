@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-j+@s9g0!4_3i1a)5#=rhz10pjj+a+7qlh1e%3s##mc(j2xav*6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -73,10 +73,20 @@ WSGI_APPLICATION = 'OTICAI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'somesai_personalised_learning',
+        'USER': 'apimgt',
+        'PASSWORD': '6732gwh76346gw673455fsdgavacvVA',
+        'HOST': 'otic-educ.postgres.database.azure.com',
+        'PORT': '5432',
     }
 }
 

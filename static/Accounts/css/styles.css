@@ -23,6 +23,7 @@ form input,label{
     height: 3.5em;
 }
 
+
 form button{
     background: #040458;
     color: white;
@@ -42,3 +43,8 @@ span{
 }
 
 /*REGISTER*/
+
+form .options{
+    width: 50%;
+    background: red;
+}

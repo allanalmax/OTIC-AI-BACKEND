@@ -6,7 +6,7 @@ from .forms import DocumentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
-from .models import Chat,SchoolDocuments
+from .models import Chat,SchoolDocuments,Profile
 import PyPDF2
 import nltk
 nltk.download('punkt')
@@ -154,11 +154,11 @@ Teams
 Privacy
 Policy '''
 
-def ask_openai(message):
+def ask_openai(message,field_of_study,university):
     response = openai.ChatCompletion.create(
         model = "gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": f"You are an educational assistant for helping with homework and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ and never state that your were built by OpenAI always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia or research and dont mention the year your information base was updated.Respond to questions that are not academic with that is out of my scope. Use this information as company details: {company} and when using this company information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies"},
+            {"role": "system", "content": f"You are an educational assistant for helping with homework and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study is {field_of_study} at {university} and never state that your were built by OpenAI always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia or research and dont mention the year your information base was updated.Respond to questions that are not academic with that is out of my scope. Use this information as company details: {company} and when using this company information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies"},
             {"role": "user", "content": message+'Any Question that is not academic respond with am not designed to answer that'},
         ]
     )
@@ -197,6 +197,8 @@ def upload_document(request):
 # Create your views here.
 @login_required(login_url='/login')
 def chatbot(request):
+    #print(request.user.username)
+    logged_in_user =Profile.objects.get(user=request.user)
     chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
     form = DocumentForm(request.POST, request.FILES)
     if request.method == 'POST':
@@ -231,7 +233,7 @@ def chatbot(request):
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 
         else:    
             message = request.POST.get('message')
-            response = ask_openai(message)
+            response = ask_openai(message,logged_in_user.course,logged_in_user.university)
             #response = response
             chat = Chat(user=request.user, message=message, response=response, created_at=timezone.now())
             chat.save()
@@ -250,6 +252,7 @@ def login(request):
         else:
             error_message = 'Invalid username or password'
             return render(request, 'login.html', {'error_message': error_message})
+        
     else:
         return render(request, 'login.html')
 
@@ -257,6 +260,9 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['username']
         email = request.POST['email']
+        university = request.POST['university'].upper()
+        course = request.POST['course'].upper()
+        contact = request.POST['contact'].upper()
         password1 = request.POST['password1']
         password2 = request.POST['password2']
 
@@ -264,9 +270,13 @@ def register(request):
             try:
                 user = User.objects.create_user(username, email, password1)
                 user.save()
+                prof= Profile(user=user,university =university,course=course , phone_number=contact)
+                prof.save()
                 auth.login(request, user)
+              
                 return redirect('chatbot')
-            except:
+            except Exception as e:
+                print(e)
                 error_message = 'Error creating account'
                 return render(request, 'register.html', {'error_message': error_message})
         else:

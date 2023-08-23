@@ -1,3 +1,4 @@
+from os import name
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import openai
@@ -5,7 +6,7 @@ from .forms import DocumentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
-from .models import Chat
+from .models import Chat,SchoolDocuments
 import PyPDF2
 import nltk
 nltk.download('punkt')
@@ -191,13 +192,13 @@ def chatbot(request):
         
         if form.is_valid():
             document = form.save()
+            uploaded_doc = request.FILES['file']
             doc = extract_text_from_pdf(request.FILES['file'])
             parser = PlaintextParser.from_string(doc , Tokenizer("english"))
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
             prompt = f"Summarize the following text:\n{doc}" 
-  
 
 # Get the generated summary from the API response
           #  generated_summary = response.choices[0].text
@@ -205,8 +206,9 @@ def chatbot(request):
             final_words = ''
             for sentence in summary:
               final_words = final_words + f'{str(sentence)}'  
-            print(len(final_words),len(doc)) 
-            chat = Chat(user=request.user, message='uploaded PDF', response=final_words, created_at=timezone.now())
+            store = SchoolDocuments(content =doc,name=uploaded_doc.name)
+            store.save()
+            chat = Chat(user=request.user, message='uploaded document', response=final_words, created_at=timezone.now())
             chat.save()
             return render(request, 'chatbot.html', {'chats': chats,'form': form})
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 

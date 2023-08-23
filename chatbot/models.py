@@ -14,6 +14,7 @@ class Chat(models.Model):
 class SchoolDocuments(models.Model):
     name = models.TextField()
     content = models.TextField()
+    response = models.ForeignKey(Chat, on_delete=models.CASCADE)
 
 class Document(models.Model):
     

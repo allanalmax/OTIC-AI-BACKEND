@@ -206,10 +206,11 @@ def chatbot(request):
             final_words = ''
             for sentence in summary:
               final_words = final_words + f'{str(sentence)}'  
-            store = SchoolDocuments(content =doc,name=uploaded_doc.name)
-            store.save()
+            
             chat = Chat(user=request.user, message='uploaded document', response=final_words, created_at=timezone.now())
             chat.save()
+            store = SchoolDocuments(content =doc,name=uploaded_doc.name,response =chat)
+            store.save()
             return render(request, 'chatbot.html', {'chats': chats,'form': form})
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 
         else:    

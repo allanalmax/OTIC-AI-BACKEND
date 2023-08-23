@@ -57,6 +57,9 @@
   button[type=submit]:hover {
     background-color: #0062cc;
   }
+  .divider{
+    height:15px;
+  }
   .alert-danger {
     background-color: #f8d7da;
     color: #721c24;
@@ -86,7 +89,7 @@
           <label for="password">Password</label>
           <input type="password" class="form-control" id="password" name="password" required>
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Login</button> <div class='divider'></div> <button onclick="window.location.href='{% url 'register' %}'" class="btn btn-primary btn-send" >Sign up</button>
       </form>
     </div>
   </div>

@@ -21,11 +21,16 @@ openai.api_key = openai_api_key
 
 def extract_text_from_pdf(pdf_path):
    # with open(pdf_path, 'rb') as pdf_file:# open in binary read mode ('rb')
-        pdf_reader = PyPDF2.PdfReader(pdf_path)
-        text = ''
-        for page in pdf_reader.pages:
-            text += page.extract_text()
-        return text
+       try:
+            pdf_reader = PyPDF2.PdfReader(pdf_path)
+            text = ''
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+            return text
+       except:
+           chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
+           chat.save()  
+           return redirect('/')     
 
 def preprocess_text(text):
     # Remove non-alphanumeric characters and extra whitespaces
@@ -181,6 +186,8 @@ def upload_document(request):
                   final_words = final_words + f'{str(sentence)}'
                 print(len(final_words),len(doc))  
             except:
+                chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
+                chat.save()
                 return redirect('/')
     else:
         form = DocumentForm()

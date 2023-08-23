@@ -10,3 +10,7 @@ class Chat(models.Model):
 
     def __str__(self):
         return f'{self.user.username}: {self.message}'
+
+class Document(models.Model):
+    
+    file = models.FileField(upload_to='documents/')

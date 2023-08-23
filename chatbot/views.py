@@ -166,18 +166,22 @@ def upload_document(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            document = form.save()
-            doc = preprocess_text(format_text(extract_text_from_pdf(request.FILES['file'])))
-            parser = PlaintextParser.from_string(doc , Tokenizer("english"))
-            summarizer = LexRankSummarizer()
-            sentences_count = 5  # Adjust this value to the desired length
-            summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
+            try:
+                document = form.save()
+                
+                doc = preprocess_text(format_text(extract_text_from_pdf(request.FILES['file'])))
+                parser = PlaintextParser.from_string(doc , Tokenizer("english"))
+                summarizer = LexRankSummarizer()
+                sentences_count = 5  # Adjust this value to the desired length
+                summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
 
-            print("Summary:")
-            final_words = ''
-            for sentence in summary:
-              final_words = final_words + f'{str(sentence)}'
-            print(len(final_words),len(doc))  
+                print("Summary:")
+                final_words = ''
+                for sentence in summary:
+                  final_words = final_words + f'{str(sentence)}'
+                print(len(final_words),len(doc))  
+            except:
+                return redirect('/')
     else:
         form = DocumentForm()
     return render(request, 'upload.html', {'form': form})
@@ -193,7 +197,12 @@ def chatbot(request):
         if form.is_valid():
             document = form.save()
             uploaded_doc = request.FILES['file']
-            doc = extract_text_from_pdf(request.FILES['file'])
+            try:
+             doc = extract_text_from_pdf(request.FILES['file'])
+            except:
+                chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
+                chat.save()
+                return render(request, 'chatbot.html', {'chats': chats,'form': form})
             parser = PlaintextParser.from_string(doc , Tokenizer("english"))
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length

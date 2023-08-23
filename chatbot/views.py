@@ -235,7 +235,7 @@ def chatbot(request):
             message = request.POST.get('message')
             response = ask_openai(message,logged_in_user.course,logged_in_user.university)
             #response = response
-            chat = Chat(user=request.user, message=message, response=response.replace('</br>','                                                                                                                                                                                         '), created_at=timezone.now())
+            chat = Chat(user=request.user, message=message, response=response.replace('</br>',' '), created_at=timezone.now())
             chat.save()
             return JsonResponse({'message': message, 'response': response})
     return render(request, 'chatbot.html', {'chats': chats,'form': form})

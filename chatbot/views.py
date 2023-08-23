@@ -164,7 +164,7 @@ def ask_openai(message,field_of_study,university):
     )
     
     answer = response.choices[0].message.content.strip()
-    return answer
+    return answer.replace('  ','\n').replace('\n','</br>')
 
 
 def upload_document(request):

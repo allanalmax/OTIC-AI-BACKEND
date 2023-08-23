@@ -186,7 +186,7 @@ def upload_document(request):
 # Create your views here.
 @login_required(login_url='/login')
 def chatbot(request):
-    chats = Chat.objects.filter(user=request.user)
+    chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
     form = DocumentForm(request.POST, request.FILES)
     if request.method == 'POST':
         

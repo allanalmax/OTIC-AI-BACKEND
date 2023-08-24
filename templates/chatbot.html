@@ -143,7 +143,8 @@
               <b>SomesaAI Chatbot</b>
             </div>
             <div class="message-content">
-              {{chat.response}}
+              {{chat.response|linebreaksbr|safe }}
+              
             </div>
           </div>
         </li>

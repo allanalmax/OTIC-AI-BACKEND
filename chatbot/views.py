@@ -10,11 +10,14 @@ from .models import Chat,SchoolDocuments,Profile
 import PyPDF2
 import nltk
 nltk.download('punkt')
+import spacy
+nlp = spacy.load("en_core_web_sm")
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 from django.utils import timezone
 import re
+
 
 openai_api_key = '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'
 openai.api_key = openai_api_key
@@ -167,31 +170,7 @@ def ask_openai(message,field_of_study,university):
     return answer.replace('  ','\n').replace('\n','</br>')
 
 
-def upload_document(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                document = form.save()
-                
-                doc = preprocess_text(format_text(extract_text_from_pdf(request.FILES['file'])))
-                parser = PlaintextParser.from_string(doc , Tokenizer("english"))
-                summarizer = LexRankSummarizer()
-                sentences_count = 5  # Adjust this value to the desired length
-                summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
 
-                print("Summary:")
-                final_words = ''
-                for sentence in summary:
-                  final_words = final_words + f'{str(sentence)}'
-                print(len(final_words),len(doc))  
-            except:
-                chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
-                chat.save()
-                return redirect('/')
-    else:
-        form = DocumentForm()
-    return render(request, 'upload.html', {'form': form})
 
 
 # Create your views here.
@@ -200,6 +179,9 @@ def chatbot(request):
     #print(request.user.username)
     logged_in_user =Profile.objects.get(user=request.user)
     chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
+    for chat in chats:
+        parts = chat.response.split('-')
+        chat.response_parts = [part.strip() for part in parts if part.strip()]
     form = DocumentForm(request.POST, request.FILES)
     if request.method == 'POST':
         
@@ -217,25 +199,44 @@ def chatbot(request):
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
             prompt = f"Summarize the following text:\n{doc}" 
+            sentence = nlp(doc) 
+            sentences = [sent for sent in sentence.sents]
+            max_token_count = 4000
+            sentence_portions = []
+            current_portion = []
 
+            for sentence in sentences:
+                sentence_token_count = sum(token.is_alpha for token in sentence)
+                
+                if sum(sentence_token_count for sentence in current_portion) + sentence_token_count <= max_token_count:
+                    current_portion.append(sentence)
+                else:
+                    sentence_portions.append(current_portion)
+                    current_portion = [sentence]
+
+            # Add the last portion if any sentences remain
+            if current_portion:
+                sentence_portions.append(current_portion)
 # Get the generated summary from the API response
           #  generated_summary = response.choices[0].text
-            print("Summary:")
             final_words = ''
-            for sentence in summary:
-              final_words = final_words + f'{str(sentence)}'  
-            
-            chat = Chat(user=request.user, message='uploaded document', response=final_words, created_at=timezone.now())
+            '''for sentence in summary:
+              final_words = final_words + f'{str(sentence)}'  '''
+            for val in sentence_portions:
+                  prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
+                  resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university).replace('</br>',' ')
+                  final_words = final_words+resp.replace('-','\n') 
+            chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
             chat.save()
             store = SchoolDocuments(content =doc,name=uploaded_doc.name,response =chat)
             store.save()
-            return render(request, 'chatbot.html', {'chats': chats,'form': form})
+            return redirect('/')
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 
         else:    
             message = request.POST.get('message')
             response = ask_openai(message,logged_in_user.course,logged_in_user.university)
             #response = response
-            chat = Chat(user=request.user, message=message, response=response.replace('</br>',' '), created_at=timezone.now())
+            chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
             chat.save()
             return JsonResponse({'message': message, 'response': response})
     return render(request, 'chatbot.html', {'chats': chats,'form': form})

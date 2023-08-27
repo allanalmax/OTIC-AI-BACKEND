@@ -194,17 +194,19 @@ def chatbot(request):
                 chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
                 chat.save()
                 return render(request, 'chatbot.html', {'chats': chats,'form': form})
+               
             parser = PlaintextParser.from_string(doc , Tokenizer("english"))
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
             prompt = f"Summarize the following text:\n{doc}" 
             sentence = nlp(doc) 
+            print('here')   
             sentences = [sent for sent in sentence.sents]
             max_token_count = 4000
             sentence_portions = []
             current_portion = []
-
+           
             for sentence in sentences:
                 sentence_token_count = sum(token.is_alpha for token in sentence)
                 
@@ -221,13 +223,21 @@ def chatbot(request):
           #  generated_summary = response.choices[0].text
             final_words = ''
             '''for sentence in summary:
-              final_words = final_words + f'{str(sentence)}'  '''
-            for val in sentence_portions:
+              final_words = final_words + f'{str(sentence)}'  '''  
+            summarized_id =''  
+            for index,val in enumerate(sentence_portions,start=0):
                   prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
                   resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university).replace('</br>',' ')
-                  final_words = final_words+resp.replace('-','\n') 
-            chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
-            chat.save()
+                  final_words = resp.replace('-','\n') 
+                  if index== 0:
+                        chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
+                        chat.save()
+                        summarized_id = chat.id
+                  else:
+                    update = Chat.objects.get(id=summarized_id)
+                    update.response =  update.response + final_words
+                    update.save()
+                  print(index)  
             store = SchoolDocuments(content =doc,name=uploaded_doc.name,response =chat)
             store.save()
             return redirect('/')

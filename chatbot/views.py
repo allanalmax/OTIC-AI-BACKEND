@@ -22,6 +22,9 @@ import re
 openai_api_key = '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'
 openai.api_key = openai_api_key
 
+def home_load(request):
+    return render(request,'home.html')
+
 def extract_text_from_pdf(pdf_path):
    # with open(pdf_path, 'rb') as pdf_file:# open in binary read mode ('rb')
        try:

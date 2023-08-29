@@ -73,11 +73,11 @@ header {
   background-color:  rgba(240, 247, 255, 0.5);
 }
 .header {
-  position: fixed;
+  position: sticky;
   display:flex;
   background-color: #F0F7FF;
   flex-direction:row;
-  z-index:10;
+  z-index:16;
   height:50px;
  
   width: 100%;
@@ -112,6 +112,7 @@ header {
 <div class='sidess'>
   <div class="sidenav"> 
     <div  style='height:170px; display:flex; flex-direction:column;' >
+      <div style='height:80px;'></div>
       <img width="100%" height="70%" src="{% static 'images/somesailogo.png' %}" alt="My Image">
     <div style='margin-left:25%;color:orange'>SomesaAI</div>
     </div> 
@@ -122,24 +123,24 @@ header {
     <a href="/">Settings</a>
     <a href="/logout">Log out</a>
   </div>
+  <div class='header' onclick="toggleSidebar()">
+    <div style='width:20px;'></div>
+    {% bs_icon 'list'  color='black'  size='2.4em' extra_classes="bi-valign-default" %}
    
+
+{% if user.is_authenticated %}
+<div class="card-header custom-bg text-black"><b>Welcome, {{user.username}}</b>   </div>
+{% else %}
+<div class="card-header custom-bg text-black"><a style="color: yellow" href="login">Login</a>   <a style="color: yellow;" href="register">Register</a></div>
+{% endif %}  
+  </div>  
    
 </div>
 
 <header>
   
 
-    <div class='header' onclick="toggleSidebar()">
-      <div style='width:160px'></div>
-      {% bs_icon 'list'  color='black'  size='2.4em' extra_classes="bi-valign-default" %}
-     
-  
-  {% if user.is_authenticated %}
-  <div class="card-header custom-bg text-black"><b>Welcome, {{user.username}}</b>   </div>
-  {% else %}
-  <div class="card-header custom-bg text-black"><a style="color: yellow" href="login">Login</a>   <a style="color: yellow;" href="register">Register</a></div>
-  {% endif %}  
-    </div>
+    
  
  
       

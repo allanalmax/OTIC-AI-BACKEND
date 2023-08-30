@@ -22,6 +22,12 @@ import re
 openai_api_key = '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'
 openai.api_key = openai_api_key
 
+def crop_text_to_limit(text, word_limit):
+    words = text.split()
+    cropped_words = words[:word_limit]
+    cropped_text = ' '.join(cropped_words)
+    return cropped_text
+
 def home_load(request):
     return render(request,'home.html')
 
@@ -32,7 +38,7 @@ def extract_text_from_pdf(pdf_path):
             text = ''
             for page in pdf_reader.pages:
                 text += page.extract_text()
-            return text
+            return crop_text_to_limit(text,20000)
        except:
            chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
            chat.save()  

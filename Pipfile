@@ -63,7 +63,6 @@ wasabi = "==1.1.2"
 whitenoise = "==6.5.0"
 yarl = "==1.9.2"
 channels = "*"
-django-redis = "*"
 channels-redis = "*"
 
 [dev-packages]

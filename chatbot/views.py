@@ -17,6 +17,10 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 from django.utils import timezone
 import re
+import json
+from django.template import RequestContext
+from channels.layers import get_channel_layer
+from django.shortcuts import render, HttpResponse
 
 
 openai_api_key = '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'
@@ -239,7 +243,7 @@ def chatbot(request):
             chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
             chat.save()
             return JsonResponse({'message': message, 'response': response})
-    return render(request, 'chatbot.html', {'chats': chats,'form': form})
+    return render(request, 'chatbot.html', {'chats': chats,'form': form,'room_name':"broadcast"})
 
 
 def login(request):

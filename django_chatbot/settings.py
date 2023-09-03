@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wsa9k4v_goql%t8rn@q4*5flo+xnnxa%8!^p2g(4g-=py==ur)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chatbot',
+     'django_bootstrap_icons',
+      'bootstrapsidebar',
     'channels',
     'notifications'
 ]
@@ -90,12 +92,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'somesai_personalised_learning',
-        'USER': 'apimgt',
-        'PASSWORD': '6732gwh76346gw673455fsdgavacvVA',
-        'HOST': 'otic-educ.postgres.database.azure.com',
+       'USER': 'somesai_backend',
+       'PASSWORD': '6732gwh76346gw762365t673455fsdgavacvVA',
+        'HOST': '34.29.52.253',
         'PORT': '5432',
     }
 }
+
 
 
 # Password validation
@@ -127,8 +130,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

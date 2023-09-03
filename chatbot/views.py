@@ -8,6 +8,8 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import Chat,SchoolDocuments,Profile
 import PyPDF2
+import docx
+from pptx import Presentation
 import nltk
 nltk.download('punkt')
 import spacy
@@ -17,10 +19,23 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lex_rank import LexRankSummarizer
 from django.utils import timezone
 import re
+import textract
 
 
 openai_api_key = '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'
 openai.api_key = openai_api_key
+
+def crop_text_to_limit(text, word_limit):
+    words = text.split()
+    if len(words) >= word_limit:
+     cropped_words = words[:word_limit]
+    else:
+        cropped_words = words[:]  
+    cropped_text = ' '.join(cropped_words)
+    return cropped_text
+
+def home_load(request):
+    return render(request,'home.html')
 
 def extract_text_from_pdf(pdf_path):
    # with open(pdf_path, 'rb') as pdf_file:# open in binary read mode ('rb')
@@ -31,9 +46,30 @@ def extract_text_from_pdf(pdf_path):
                 text += page.extract_text()
             return text
        except:
-           chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
-           chat.save()  
-           return redirect('/')     
+           try:
+              doc = docx.Document(pdf_path)
+              text = ""
+              for paragraph in doc.paragraphs:
+                    text += paragraph.text + "\n"
+              return text      
+           except: 
+            try:
+                presentation = Presentation(pdf_path)
+                text = ""
+                for slide in presentation.slides:
+                    for shape in slide.shapes:
+                        if shape.has_text_frame:
+                            text += shape.text + "\n"
+                return text            
+            except: 
+                try:
+                    text = textract.process(pdf_path).decode("utf-8")
+                    print('tfgfddfdf')
+                    return text
+                except:       
+                    chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document type', created_at=timezone.now())
+                    chat.save()  
+                    return redirect('/')     
 
 def preprocess_text(text):
     # Remove non-alphanumeric characters and extra whitespaces
@@ -158,16 +194,20 @@ Privacy
 Policy '''
 
 def ask_openai(message,field_of_study,university):
-    response = openai.ChatCompletion.create(
-        model = "gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": f"You are an educational assistant called SomesAI for helping with homework and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that your were built by OpenAI always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia or research and dont mention the year your information base was updated.Respond to questions that are not academic with that is out of my scope. Use this information as company details: {company} and when using this company information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies"},
-            {"role": "user", "content": message+f'Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution'},
-        ]
-    )
-    
-    answer = response.choices[0].message.content.strip()
-    return answer.replace('  ','\n').replace('\n','</br>')
+    try:
+        response = openai.ChatCompletion.create(
+            model = "gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"You are an educational assistant called SomesAI for helping with homework,making recommendations always to me concerning my field of study with latest developments in my field of study.Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution and giving reading material or proven research plus give my daily new tasks or quotes that can help me stay up to date with my field and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that your were built by OpenAI or chatgpt always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia or research and dont mention the year your information base was updated.Respond to questions that are not academic with that is out of my scope. Use this information as company details: {company} and when using this company information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies."},
+                {"role": "user", "content": message},
+            ]
+        )
+        
+        answer = response.choices[0].message.content.strip()
+        return answer.replace('  ','\n').replace('\n','</br>')
+    except:
+        return redirect('/')    
+
 
 
 
@@ -191,20 +231,27 @@ def chatbot(request):
             try:
              doc = extract_text_from_pdf(request.FILES['file'])
             except:
-                chat = Chat(user=request.user, message='uploaded document', response='Only PDF files can be processed', created_at=timezone.now())
-                chat.save()
-                return render(request, 'chatbot.html', {'chats': chats,'form': form})
-            parser = PlaintextParser.from_string(doc , Tokenizer("english"))
+                try:
+                    text = textract.process(request.FILES['file']).decode("utf-8")
+                    print('tfgfddfdf')
+                    return text
+                except:    
+                    chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document types', created_at=timezone.now())
+                    chat.save()
+                    return render(request, 'chatbot.html', {'chats': chats,'form': form})
+                
+            parser = PlaintextParser.from_string(crop_text_to_limit(doc,50000) , Tokenizer("english"))
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
             prompt = f"Summarize the following text:\n{doc}" 
             sentence = nlp(doc) 
+            print('here')   
             sentences = [sent for sent in sentence.sents]
-            max_token_count = 4000
+            max_token_count = 3900
             sentence_portions = []
             current_portion = []
-
+           
             for sentence in sentences:
                 sentence_token_count = sum(token.is_alpha for token in sentence)
                 
@@ -221,16 +268,31 @@ def chatbot(request):
           #  generated_summary = response.choices[0].text
             final_words = ''
             '''for sentence in summary:
-              final_words = final_words + f'{str(sentence)}'  '''
-            for val in sentence_portions:
-                  prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
-                  resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university).replace('</br>',' ')
-                  final_words = final_words+resp.replace('-','\n') 
-            chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
-            chat.save()
-            store = SchoolDocuments(content =doc,name=uploaded_doc.name,response =chat)
-            store.save()
-            return redirect('/')
+              final_words = final_words + f'{str(sentence)}'  '''  
+            summarized_id =''  
+            replaced_value = 'N/A' 
+            try:
+                for index,val in enumerate(sentence_portions,start=0):
+                    prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
+                    resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university).replace('</br>',' ')
+                    final_words = resp.replace('-','\n -')
+                    if index== 0:
+                            chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
+                            chat.save()
+                            summarized_id = chat.id
+                            
+                    else:
+                        update = Chat.objects.get(id=summarized_id)
+                        update.response =  update.response + final_words
+                        update.save()
+                    print(index)  
+                store = SchoolDocuments(content =doc,name=uploaded_doc.name,response =Chat.objects.get(id=summarized_id))
+                store.save()
+                
+                return redirect('/')
+            except Exception as e:
+                  print(e)
+                  return redirect('/')   
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 
         else:    
             message = request.POST.get('message')

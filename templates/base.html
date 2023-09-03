@@ -1,20 +1,158 @@
-
+{% load static %}
+{% load bootstrap_icons %}
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <style type="text/css">
+      body {
+        background-color: #fbfbfb;
+      }
+      @media (min-width: 991.98px) {
+        main {
+          padding-left: 240px;
+        }
+      }
+      
+      /* Sidebar */
+    
+      .sidenav {
+        height:100%;
+        width:15%;
+        position:fixed;
+        z-index:16;
+        top:0;
+        left:0;
+        min-width:160px;
+         display:flex;
+         flex-direction:column;
+        background-color:#38434C;
+        overflow-x: :hidden;
+        padding-top:20px;
+        transition: left 0.99s;
+      }
+   
+      .sidenav a {
+        padding:6px 8px 6px 16px;
+        text-decoration: none;
+        font-size:20px;
+        font-family: Jost;
+        color: #FFF;
+        display:block;
+        font-weight: 200;
+line-height: normal;
+      }
+   
+      .sidenav a:hover{
+        color:orange;
+        text-decoration: none;
+      }	
+    
+   .bi-valign-bottom {
+    margin-left:20px,
+   }
+      .main{
+        margin-left:160px;
+        padding: 0px 10px;
+      }
+      /* styles.css */
+.side {
+  position:fixed;
+  top:0px;
+  height:100%;
+
+}
+header {
+  background-color: #F0F7FF;
+  width:100vw;
+  max-height:50px;
+  top:0px;
+ 
+}
+.custom-bg {
+  background-color:  rgba(240, 247, 255, 0.5);
+}
+.header {
+  position: fixed;
+  display:flex;
+  background-color: #F0F7FF;
+  flex-direction:row;
+  z-index:16;
+  height:50px;
+ 
+  width: 100%;
+}
+   
+    </style>
+    <script>
+      function toggleSidebar() {
+        var sidenav = document.querySelector('.sidenav');
+        
+        if (sidenav.style.left === '0px') {
+            sidenav.style.left = '-400px'; // Hide the sidebar
+           
+        } else {
+            sidenav.style.left = '0px'; // Show the sidebar
+           
+        }
+    }
+    
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.18.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     {% block styles %}{% endblock %}
   </head>
   <body>
     <div id="notifications"></div>
     {% block content %}{% endblock %}
+   <!--Main Navigation-->
+<div class='sidess'>
+  <div class="sidenav"> 
+    <div  style='height:170px; display:flex; flex-direction:column;' >
+      <div style='height:80px;'></div>
+      <img width="100%" height="70%" src="{% static 'images/somesailogo.png' %}" alt="My Image">
+    <div style='margin-left:25%;color:orange'>SomesaAI</div>
+    </div> 
+    <a href="/">Home</a>
+    <a href="/">Resources</a> 
+    <a href="/">ChatBot</a>
+    <a href="/">Account</a>
+    <a href="/">Settings</a>
+    <a href="/logout">Log out</a>
+  </div>
+  <div class='header' onclick="toggleSidebar()">
+    <div style='width:20px;'></div>
+    {% bs_icon 'list'  color='black'  size='2.4em' extra_classes="bi-valign-default" %}
+   
+
+{% if user.is_authenticated %}
+<div class="card-header custom-bg text-black"><b>Welcome, {{user.username}}</b>   </div>
+{% else %}
+<div class="card-header custom-bg text-black"><a style="color: yellow" href="login">Login</a>   <a style="color: yellow;" href="register">Register</a></div>
+{% endif %}  
+  </div>  
+   
+</div>
+
+<header>
+  
+
+    
+ 
+ 
+      
+</header>
+{% block content %}{% endblock %}  
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     {% block scripts %}{% endblock %}
-  </body>
+   
+</body>
 </html>

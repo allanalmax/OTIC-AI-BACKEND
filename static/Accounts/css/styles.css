@@ -1,0 +1,50 @@
+body{
+    background: #F0F7FF;
+}
+
+/*LOGIN*/
+.login{
+    background: white;
+    width: 60%;
+    height: 35em;
+    margin: auto;
+    margin-top: 2.3em;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    
+}
+
+form input,label{
+    width: 50%;
+    margin: auto;
+    height: 3.5em;
+}
+
+
+form button{
+    background: #040458;
+    color: white;
+    height: 3.5em;
+    width: 50%;
+    margin: auto;
+}
+
+h1,h2{
+    display: flex;
+    justify-content: center;
+}
+
+span{
+    display: flex;
+    justify-content: center;
+}
+
+/*REGISTER*/
+
+form .options{
+    width: 50%;
+    background: red;
+}

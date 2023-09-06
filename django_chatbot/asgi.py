@@ -17,13 +17,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_chatbot.settings')
 django.setup()
 
 from channels.auth import AuthMiddlewareStack
-from notifications.routing import websocket_urlpatterns
+from . import urls
+# from notifications.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            websocket_urlpatterns
+    "websocket":URLRouter(
+            urls.websocket_urlpatterns
         )
-    ),
+    
 })

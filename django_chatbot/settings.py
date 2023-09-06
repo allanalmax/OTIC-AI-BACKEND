@@ -92,8 +92,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'somesai_personalised_learning',
-       'USER': 'somesai_backend',
-       'PASSWORD': '6732gwh76346gw762365t673455fsdgavacvVA',
+       'USER': 'oticsuperadmin',
+       'PASSWORD': 'j[maUIM=]C};D>K7',
         'HOST': '34.29.52.253',
         'PORT': '5432',
     }
@@ -151,9 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Channels
 CHANNEL_LAYERS = {
     "default": {
-        'BACKEND': "channels_redis.core.RedisChannelLayer",
-        'CONFIG': {
-            "hosts": ["redis://localhost:6379"],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        
     },
 }

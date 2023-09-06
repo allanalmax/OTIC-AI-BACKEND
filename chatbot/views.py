@@ -305,7 +305,7 @@ def chatbot(request):
             chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
             chat.save()
             return JsonResponse({'message': message, 'response': response})
-    return render(request, 'chatbot.html', {'chats': chats,'form': form,'room_name':"broadcast"})
+    return render(request, 'chatbot.html', {'chats': chats,'form': form})
 
 
 def login(request):

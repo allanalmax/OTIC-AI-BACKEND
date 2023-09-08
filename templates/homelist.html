@@ -1,41 +1,109 @@
-    <div style="background: white; width: 30%; margin-left: 15em; height: 17em; border-radius: 5px;">
-       <h1>Recent</h1>
-       <ul style="list-style: none;">
-        <hr/>
-           <li>Course Note A <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-           <hr/>
-           <li>Course Note B <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-           <hr/>
-           <li>Course Note C <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-           <hr/>
-       </ul>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Default styles for larger screens */
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .recent {
+            background: white;
+            margin-top: 0.7em;
+            width: 30%;
+            height: 30%;
+            border-radius: 5px;
+            border: 5px solid gray;
+            z-index: -1;
+        }
+
+        .search-container {
+            background: white;
+            width: 50%;
+            border-radius: 5px;
+        }
+
+        .search-input {
+            border-radius: 4px;
+            border: 1px solid gray;
+            margin: 1em 0;
+            padding: 0.5em;
+            width: 100%;
+        }
+
+        .note {
+            border-radius: 4px;
+            border: 5px solid gray;
+            margin: 1em 0;
+            padding: 1em;
+        }
+
+        /* Media Query for smaller screens */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .recent, .search-container {
+                width: 90%;
+                margin-left: 0;
+            }
+
+            .search-input {
+                margin: 1em 0;
+            }
+
+            .note {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="recent">
+            <h1>Recent</h1>
+            <ul style="list-style: none;">
+                <hr/>
+                <li>Course Note A <span style="margin-left: -10em;">04 may, 09:20AM</span></li>
+                <hr/>
+                <li>Course Note B <span style="margin-left: -10em;">04 may, 09:20AM</span></li>
+                <hr/>
+                <li>Course Note C <span style="margin-left: -10em;">04 may, 09:20AM</span></li>
+                <hr/>
+            </ul>
+        </div>
+        <div class="search-container">
+            <input class="search-input" placeholder="Search course notes, pamphlets....."/>
+            <div class="note">
+                <p>
+                    In today’s dynamic IT environment with increased 
+                    global competition, enterprises must achieve greater
+                    business agility and decrease the TCO (Total Cost of
+                    Ownership) of their system for service. As the need for
+                    innovative software circulation process emerges, SaaS
+                </p>
+                <h1>Course Note D</h1>
+                <h2>In today’s dynamic IT environment</h2>
+                <button style="background-color: blue; border-radius: 5px; border: none; height: 2em; width: 4.5em; margin-bottom: 1em; color: white;">Share</button>
+            </div>
+            <div class="note">
+                <p>
+                    In today’s dynamic IT environment with increased 
+                    global competition, enterprises must achieve greater
+                    business agility and decrease the TCO (Total Cost of
+                    Ownership) of their system for service. As the need for
+                    innovative software circulation process emerges, SaaS
+                </p>
+                <h1>Course Note E</h1>
+                <h2>In today’s dynamic IT environment</h2>
+                <button style="background-color: blue; border-radius: 5px; border: none; height: 2em; width: 4.5em; margin-bottom: 1em; color: white;">Share</button>
+            </div>
+        </div>
     </div>
-    <div style="background: white; margin-top: -17em; height: 100%; width: 50%; margin-left: 38em; border-radius: 5px;">
-       <input style="border-radius: 4px; margin-left: 5em; margin-top: 1em; border-color: gray; height: 2.5em; width: 45%;" placeholder="Search course notes, pamphlets....."/></button>
-       <div style="display: flex;">
-       <div style="border-radius: 4px;  border: 5px solid gray; width: 40%; margin-top: 1em; margin-left: 2em;">
-           <p style="margin-left: 2px";>
-           In today’s dynamic IT environment with increased 
-           global competition, enterprises must achieve greater
-           business agility and decrease the TCO (Total Cost of
-           Ownership) of their system for service. As the need for
-           innovative software circulation process emerges, SaaS
-          </p>
-          <h1>Course Note D</h1>
-          <h2>In today’s dynamic IT environment</h2>
-          <button style="background-color: blue; border-radius: 5px; border: none; height: 2em; width: 4.5em; margin-bottom: 2em; color: white;">Share</button>
-       </div>
-       <div style="border-radius: 4px;  border: 5px solid gray; width: 40%; margin-top: 1em; margin-left: 2em;">
-           <p style="margin-left: 2px";>
-           In today’s dynamic IT environment with increased 
-           global competition, enterprises must achieve greater
-           business agility and decrease the TCO (Total Cost of
-           Ownership) of their system for service. As the need for
-           innovative software circulation process emerges, SaaS
-          </p>
-          <h1>Course Note E</h1>
-          <h2>In today’s dynamic IT environment</h2>
-          <button style="background-color: blue; border-radius: 5px; border: none; height: 2em; width: 4.5em; margin-bottom: 2em; color: white;">Share</button>
-       </div>
-       </div>
-       </div>
+</body>
+</html>

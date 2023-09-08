@@ -1,0 +1,36 @@
+/* styles.css */
+body {
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Off-screen initially */
+    width: 250px;
+    height: 100vh;
+    background-color: #333;
+    transition: left 0.3s;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.content {
+    margin-left: 0;
+    transition: margin-left 0.3s;
+}
+
+.content.active {
+    margin-left: 250px;
+}
+
+.burger-icon {
+    display: block;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    cursor: pointer;
+}

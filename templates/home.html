@@ -3,29 +3,110 @@
 <html>
 
 <head>
-
-    <link rel="stylesheet" type="text/css" href="{% static 'Accounts/css/styles.css' %}"/>
     <title>SomesaAi </title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style type="text/css">
+       /* styles.css */
+       body{
+    background: #F0F7FF;
+}
+
+/*LOGIN*/
+.login{
+    background: white;
+    width: 60%;
+    height: 35em;
+    margin: auto;
+    margin-top: 2.3em;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
     
+}
+
+form input,label{
+    width: 50%;
+    margin: auto;
+    height: 3.5em;
+}
+
+
+form button{
+    background: #040458;
+    color: white;
+    height: 3.5em;
+    width: 50%;
+    margin: auto;
+}
+
+h1,h2{
+    display: flex;
+    justify-content: center;
+}
+
+span{
+    display: flex;
+    justify-content: center;
+}
+
+.side ul li:hover{
+        color:orange;
+        text-decoration: none;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.00) 100%);
+        width: 7em; 
+        height: 2em; 
+        flex-shrink: 0;
+      }	
+
+
+/*REGISTER*/
+
+form .options{
+    width: 50%;
+    background: red;
+}
+
+.sidebar-hidden {
+            display: none;
+        }
+
+        /* Apply transitions to the sidebar */
+.sidebarssss {
+    left: -13em; /* Initially, hide the sidebar off-screen */
+    transition: transform 0.3s ease; /* Add transition for transform property */
+}
+      </style>
 
 </head>
 
 <body>
 <div>
-<nav style="background: white; height: 4em; color: black; text-align: center; font-size: larger;">Student Dashboard to Access Course Notes</nav>
-<div style="background: #38434C; width: 13em; margin-top: -1.2em; height: 100vh;">
-    <ul style="list-style: none; color: white; display: flex; flex-direction: column; gap: 2rem;">
+<nav style="background: #dadada; height: 4em; color: black; font-size: larger;">
+ <i id="menu-icon"  class="fas fa-bars fa-2x"></i>
+</nav>
+    
+<div class="sidebarssss" style="background: #38434C; width: 13em;  height: 100vh; ">
+    <div  style='height:170px; display:flex; flex-direction:column;' >
+        <img width="100%" height="70%" src="{% static 'images/somesailogo.png' %}" alt="My Image">
+      <div style='margin-left:25%;color:orange'>SomesaAI</div>
+    </div> 
+    <div class="side" style="position: relative;">
+    <ul  style="list-style: none; color: white; display: flex; flex-direction: column; gap: 2rem; ">
         <li onclick="showContent('home')">Home</li>
-        <li onclick="showContent('resources')" style="background: linear-gradient(90deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.00) 100%); width: 7em; height: 2em; flex-shrink: 0;">Resources</li>
-        <li onclick="showContent('chatbot')">Chatbot</li>
+        <li onclick="showContent('resources')" >Resources</li>
+        <li><a style="color: white; " href="/chatbot">chat bot</a></li>
         <li onclick="showContent('account')">Account</li>
         <li onclick="showContent('settings')">Settings</li>
     </ul>
+    </div>
 </div>
 <div style="background: url('/static/images/image1.jpg');height: 3em; width: 70%; margin-left: 16em; margin-top: -34em; border-radius: 10px; height: 8em;">
 <h1 style="color: #ffff;">Welcome back, Nesta katende</h1>
-<ul style="list-style: none; color: white; display: flex; flex-direction: column; gap: 0.4rem;">
+<ul style="list-style: none; color: white; display: flex; flex-direction: column; gap: 0.4rem; margin-top: -0.7em;">
     <li>Course:Computer Science</li>
     <li>Email: username@gmail.com</li>
     <li>Year: Year 1</li>
@@ -41,6 +122,32 @@
 <div id="account" style="display: none;" >
     {% include 'profile.html' %}
 </div>
+<div id="chatbot" style="display: none;" >
+    {% include 'chatbot.html' %}
+</div>
+<script>
+    // Select the menu icon and the sidebar
+const menuIcon = document.getElementById('menu-icon');
+const sidebar = document.querySelector('.sidebarssss');
+
+// A flag to track the sidebar's visibility
+let isSidebarVisible = true;
+
+// Add a click event listener to the menu icon
+menuIcon.addEventListener('click', () => {
+    if (isSidebarVisible) {
+        // Hide the sidebar by moving it off-screen
+        sidebar.style.transform = 'translateX(-13em)';
+    } else {
+        // Show the sidebar by resetting its position
+        sidebar.style.transform = 'translateX(0)';
+    }
+
+    // Toggle the flag
+    isSidebarVisible = !isSidebarVisible;
+});
+
+</script>
 <script>
     let currentContent = document.getElementById('home');
     currentContent.style.display = 'block';
@@ -82,3 +189,13 @@
     }
 </script>
 </body>
+
+</html>
+
+
+
+
+
+
+
+

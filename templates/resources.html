@@ -1,35 +1,130 @@
-<div style="background: white; width: 30%; margin-left: 15em; margin-top: 1em; height: 17em; border-radius: 5px;">
-    <div style="display: flex; gap: 1rem; margin-left: 1em;">
-    <h1>Resources</h1> <h1 style="color: blue;">See All</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Default styles for larger screens */
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .resources {
+            background: white;
+            width: 30%;
+            border-radius: 5px;
+        }
+
+        .resources-header {
+            display: flex;
+            justify-content: space-between;
+            margin: 1em 1em 0;
+        }
+
+        .resources-title {
+            margin: 0;
+        }
+
+        .resources-see-all {
+            color: blue;
+        }
+
+        .resources-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .resource-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .resource-name {
+            flex: 1;
+        }
+
+        .resource-date {
+            margin-left: 1em;
+        }
+
+        .charts-container {
+            display: flex;
+            gap: 5rem;
+            margin-left: 2em;
+        }
+
+        .chart {
+            border-radius: 4px;
+            border: 5px solid gray;
+            width: 65%;
+            margin-top: 1em;
+            margin-left: 1em;
+            background: white;
+        }
+
+        /* Media Query for smaller screens */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .resources {
+                width: 90%;
+                margin-left: 0;
+                margin-top: 1em;
+            }
+
+            .charts-container {
+                flex-direction: column;
+                align-items: center;
+                margin-left: 0;
+                margin-top: 1em; /* Adjust the margin-top to reduce the gap */
+            }
+
+            .chart {
+                width: 90%;
+                margin-left: 0;
+                /* You can adjust the margin-top here to control the gap */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="border: 5px solid gray; background: white; margin-top: 2em; z-index: -1;">
+                <h1>Resources<span>See All</span></h1>
+                <ul style="list-style: none;">
+                    <hr/>
+                    <li>Course Note A <span style="margin-left: -8.5em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                    <li>Course Note B <span style="margin-left: -8.5em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                    <li>Course Note C <span style="margin-left: -8.5em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                </ul>
+            </div>
+        </div>
+        <div class="charts-container">
+            <div class="chart">
+                <h1>Resource study</h1>
+                <canvas id="barGraph" width="400" height="300"></canvas>
+            </div>
+            <div class="chart">
+                <h1>Coursework Progress</h1>
+                <ul style="list-style: none;">
+                    <hr/>
+                    <li>Course Note A <span style="margin-left: -23em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                    <li>Course Note B <span style="margin-left: -23em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                    <li>Course Note C <span style="margin-left: -23em;">04 May, 09:20 AM</span></li>
+                    <hr/>
+                </ul>
+            </div>
+        </div>
     </div>
-    <ul style="list-style: none;">
-        <hr/>
-        <li>Course Note A <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-        <hr/>
-        <li>Course Note B <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-        <hr/>
-        <li>Course Note C <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-        <hr/>
-    </ul>
- </div>
- <div style="background: white; margin-top: -17em; height: 17em; width: 50%; margin-top: -18.5em; margin-left: 38em; border-radius: 5px;">
-<h1>Activity</h1>
-</div>
-<div style="display: flex; justify-content: flex-end; margin-left: 2em;">
-    <div style="border-radius: 4px;  border: 5px solid gray; width: 40%; margin-top: 1em; margin-left: 2em; background: white;">
-        <h1>Resource study</h1>
-        <canvas id="barGraph" width="400" height="300" ></canvas>
-    </div>
-    <div style="border-radius: 4px;  border: 5px solid gray; width: 40%; margin-top: 1em; margin-left: 2em; background: white;">
-        <h1>Coursework Progress</h1>
-        <ul style="list-style: none;">
-            <hr/>
-            <li>Course Note A <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-            <hr/>
-            <li>Course Note B <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-            <hr/>
-            <li>Course Note C <span style="margin-left: -15em;">04 may, 09:20AM</span></li>
-            <hr/>
-        </ul>
-    </div>
-</div>
+</body>
+</html>

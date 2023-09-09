@@ -216,7 +216,7 @@ def ask_openai(message,field_of_study,university,id):
         response = openai.ChatCompletion.create(
             model = "gpt-3.5-turbo",
             messages=messages,
-            max_tokens = 2000
+           
         )
         
         answer = response.choices[0].message.content.strip()

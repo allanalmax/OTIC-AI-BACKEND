@@ -1,18 +1,40 @@
-<div style="background: white; width: 53em; margin-left: 16em; height: 50em;">
-    <button style="background: url('/static/images/profile1.jpg');  margin-top: 2em; width: 100%; height: 10em;flex-shrink: 0;"><img style="display: flex; margin-top: 8em; height: 70px; width: 70px; border-radius: 35px;" src="/static/images/profile.png"></button>
-    <form>
-        <label>Name</label>
-        <input  style="height: 2em; width: 50%;" type="text">
-        <label>Email</label>
-        <input style="height: 2em; width: 50%;" type="text">
-        <label>Course</label>
-        <input style="height: 2em; width: 50%;" type="text">
-        <label>University Collage</label>
-        <input style="height: 2em; width: 50%;" type="text">
-        <label>Year of Study</label>
-        <input style="height: 2em; width: 50%;" type="text">
-        <label>School</label>
-        <input style="height: 2em; width: 50%;" type="text">
-        <button style="background: blue; border-radius: 5px; width: 7em; height: 3em; margin-top: 2em; ">Save</button>
-    </form>
-</div>
+{% extends 'base.html' %}
+{% block content %}
+
+<div style=" max-width: 53em; z-index=20; margin: 0 auto; padding: 1em;">
+     <button style="background: url('/static/images/profile1.jpg'); margin-top: 2em; width: 100%; height: 10em; flex-shrink: 0;"> 
+     
+    </button>
+    <div style='height:20px;'></div>
+    <form  method="post" style="max-width: 50em; margin: 0 auto;"> 
+        {% for k in personuser %}
+        <label style="display:flex;flex-direction:row; min-width:70px;">Full Names 
+        <div style="width:20px;"></div>
+        <input name='names' value='{{ k.first_name  }}' class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="text"></label> </br>
+        <label style="display:flex;flex-direction:row;">Email <div style="width:20px;"></div>
+            <input name='email'  value='{{ k.email }}' class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="email"></label> </br>
+       {% endfor %}
+       {% for kf in personprof %}
+        <label style="display:flex;flex-direction:row;">Contact <div style="width:20px;"></div>
+            <input name='contact' value='{{ kf.phone_number }}'  class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="tel" pattern="^\+?[0-9]{10,}(?:\s?[0-9]{1,4}){0,14}$" title="Please enter a valid phone number with or without a country code"></label> </br>
+        <label style="display:flex;flex-direction:row;">Field of Study <div style="width:20px;"></div>
+            <input name='course' value='{{ kf.course }}'  class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="text"></label> </br>
+        <label style="display:flex;flex-direction:row;  min-width:70px;">University  <div style="width:20px;"></div>
+            <input name='university' value='{{ kf.university }}'  class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="text"></label> </br>
+        {% endfor %}
+            <button type='submit' style=" color: white;
+            background-color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: none;
+            margin-left:30vw;
+            border-radius: 4px;
+            cursor: pointer;
+            max-width:80px;
+            width: 100%;">Save</button> 
+       
+        </form>
+     </div>
+
+     {% endblock %}     

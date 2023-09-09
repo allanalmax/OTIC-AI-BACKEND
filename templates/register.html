@@ -90,6 +90,10 @@
       <form method="post">
         {% csrf_token %}
         <div class="form-group">
+          <label for="username">Full Names</label>
+          <input type="text" class="form-control" id="full name" name="full name" required>
+        </div>
+        <div class="form-group">
           <label for="username">Username</label>
           <input type="text" class="form-control" id="username" name="username" required>
         </div>
@@ -103,7 +107,7 @@
         </div>
         <div class="form-group">
           <label for="contact">Contact No.</label>
-          <input type="tel" class="form-control" id="contact" name="contact" required>
+          <input type="tel" class="form-control" id="contact" name="contact"  pattern="^\+?[0-9]{10,}(?:\s?[0-9]{1,4}){0,14}$" title="Please enter a valid phone number with or without a country code" required>
         </div>
         <div class="form-group">
           <label for="email">Email</label>

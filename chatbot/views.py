@@ -233,14 +233,14 @@ def chatbot(request):
             except:
                 try:
                     text = textract.process(request.FILES['file']).decode("utf-8")
-                    print('tfgfddfdf')
+                    
                     return text
                 except:    
                     chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document types', created_at=timezone.now())
                     chat.save()
                     return render(request, 'chatbot.html', {'chats': chats,'form': form})
                 
-            parser = PlaintextParser.from_string(crop_text_to_limit(doc,50000) , Tokenizer("english"))
+            parser = PlaintextParser.from_string(crop_text_to_limit(doc,20000) , Tokenizer("english"))
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
@@ -321,17 +321,19 @@ def login(request):
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
+        username = request.POST['username'].strip()
+        email = request.POST['email'].strip()
         university = request.POST['university'].upper()
         course = request.POST['course'].upper()
         contact = request.POST['contact'].upper()
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-
+        names = request.POST['full name']
+        print(names)
         if password1 == password2:
             try:
                 user = User.objects.create_user(username, email, password1)
+                user.first_name = names.strip()
                 user.save()
                 prof= Profile(user=user,university =university,course=course , phone_number=contact)
                 prof.save()
@@ -350,3 +352,20 @@ def register(request):
 def logout(request):
     auth.logout(request)
     return redirect('login')
+
+@login_required(login_url='/login')
+def profile(request):
+    user= User.objects.filter(id=request.user.id)
+    prof = Profile.objects.filter(user=request.user)
+    if request.method == 'POST':
+        name = request.POST['names'].strip()
+        email = request.POST['email'].strip()
+        contact = request.POST['contact'].strip()
+        course = request.POST['course'].upper()
+        uni = request.POST['university'].upper()
+        user_update = User.objects.get(id=request.user.id)
+        user_update.first_name = name
+        user_update.email = email
+        user_update.save()
+        Profile.objects.filter(user=user_update).update(university =uni,course=course , phone_number=contact)
+    return render(request, 'profile.html',{'personuser':user,'personprof':prof})

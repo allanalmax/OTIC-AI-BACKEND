@@ -193,19 +193,34 @@ Teams
 Privacy
 Policy '''
 
-def ask_openai(message,field_of_study,university):
+def ask_openai(message,field_of_study,university,id):
+    uzer = User.objects.get(id=id)
     try:
-        response = openai.ChatCompletion.create(
-            model = "gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": f"You are an educational assistant called SomesAI for helping with homework,making recommendations always to me concerning my field of study with latest developments in my field of study.Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution and giving reading material or proven research plus give my daily new tasks or quotes that can help me stay up to date with my field and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that your were built by OpenAI or chatgpt always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia or research and dont mention the year your information base was updated.Respond to questions that are not academic with that is out of my scope. Use this information as company details: {company} and when using this company information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies."},
+     chats = Chat.objects.filter(user =uzer).order_by('-id')[:1]
+    except Exception as e:
+        print(e)
+    old_chats= [{"role": "system", "content": f'''You are an educational assistant called SomesAI for helping with homework,making recommendations always to me concerning my field of study with latest developments in my field of study.Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution and giving reading material or proven research plus give my daily new tasks or quotes that can help me stay up to date with my field and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that your were built by OpenAI or chatgpt always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia
+                 or research and dont mention the year your information base was updated.Respond 
+                 to questions that are not academic with that is out of my scope.
+                  Use this information as company details: {company} nly when user asks about company and when using this company 
+                  information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies.'''}]
+    for k in chats:
+        old_chats.append({"role": "user","content":k.message})
+        old_chats.append({"role": "assistant","content":k.response})
+    try:
+        messages = old_chats + [
                 {"role": "user", "content": message},
             ]
+      
+        response = openai.ChatCompletion.create(
+            model = "gpt-3.5-turbo",
+            messages=messages
         )
         
         answer = response.choices[0].message.content.strip()
         return answer.replace('  ','\n').replace('\n','</br>')
-    except:
+    except Exception as e:
+        print(e)
         return redirect('/')    
 
 
@@ -274,7 +289,7 @@ def chatbot(request):
             try:
                 for index,val in enumerate(sentence_portions,start=0):
                     prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
-                    resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university).replace('</br>',' ')
+                    resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university,request.user.id).replace('</br>',' ')
                     final_words = resp.replace('-','\n -')
                     if index== 0:
                             chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
@@ -296,7 +311,7 @@ def chatbot(request):
            # return JsonResponse({'message': 'uploaded document', 'response': final_words}) 
         else:    
             message = request.POST.get('message')
-            response = ask_openai(message,logged_in_user.course,logged_in_user.university)
+            response = ask_openai(message,logged_in_user.course,logged_in_user.university,request.user.id)
             #response = response
             chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
             chat.save()

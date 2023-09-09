@@ -54,7 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'django_chatbot.urls'
-
+CSRF_TRUSTED_ORIGINS = ['https://www.somesaai.otictech.com']
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

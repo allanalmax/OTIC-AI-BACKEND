@@ -371,7 +371,7 @@ def register(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('login')
+    return redirect('landing')
 
 @login_required(login_url='/login')
 def profile(request):

@@ -60,7 +60,7 @@ line-height: 132.5%; /* 47.7px */
     padding: 10px;
     font-size: 16px;
     width: 100%;
-    max-width:400px;
+   
     box-sizing: border-box;
     margin-bottom: 10px;
   }
@@ -105,6 +105,7 @@ background: #3D5EE1;
   .horizontal-line {
       width: 100%;
       height: 2px;
+     
       top: 50%;
       transform: translateY(-50%);
   }
@@ -124,6 +125,17 @@ background: #3D5EE1;
     .cards {
         display: none;
     }
+    .horizontal-line {
+      max-width: 80vw;}
+      input { 
+        max-width: 80vw;
+      }  
+      button[type=submit] {
+        margin-left: 80px; 
+      }
+      .center-word {
+       
+      margin-left: 36vw;}
 
     /* Additional mobile-specific styling here */
 }
@@ -139,7 +151,7 @@ background: #3D5EE1;
     </div>
   </div>
   <div class="card">
-    <div class="card-header">Register</div>
+    <div class="card-header">Sign Up</div>
     <div class="card-body">
       {% if error_message %}
         <div class="alert alert-danger" role="alert">{{ error_message }}</div>
@@ -163,7 +175,7 @@ background: #3D5EE1;
           <input type="text" class="form-control" id="course" name="course" required>
         </div>
         <div class="form-group">
-          <label for="contact">Contact No.</label>
+          <label for="contact">Contact</label>
           <input type="tel" class="form-control" id="contact" name="contact"  pattern="^\+?[0-9]{10,}(?:\s?[0-9]{1,4}){0,14}$" title="Please enter a valid phone number with or without a country code" required>
         </div>
         <div class="form-group">

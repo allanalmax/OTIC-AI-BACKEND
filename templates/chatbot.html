@@ -94,7 +94,35 @@
       display: flex;
       flex-direction: column;
     }
+
+.errorlist li::before {
+    content: " "; /* Use a space as content to preserve layout */
+    color: white; /* Change to your desired text color */
+    padding-right: 5px; /* Adjust spacing as needed */
+}
+.errorlist li {
+    list-style-type: none; /* Remove the bullet point */
+    display: inline; /* Display the error messages inline */
+}
+
+
+
   </style>
+  <script>
+    // Add this script at the end of your HTML body
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all error message elements
+        const errorMessages = document.querySelectorAll('.errorlist li');
+        
+        // Loop through error messages and change the text color
+        errorMessages.forEach(function(errorMessage) {
+            if (errorMessage.textContent.trim() === 'This field is required.') {
+                errorMessage.style.display = 'none'; // Change to your desired text color
+            }
+        });
+    });
+</script>
+
 {% endblock %}
 
 
@@ -172,7 +200,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Upload</button>
+        <button class="btn btn-primary btn-send"  type="submit">Upload</button>
     </form>
     </div>
 </div>

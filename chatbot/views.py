@@ -276,6 +276,9 @@ def login(request):
     else:
         return render(request, 'login.html')
 
+def landing(request):
+    return render(request, 'landing.html')
+
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']

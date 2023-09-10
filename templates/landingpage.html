@@ -113,7 +113,26 @@ font-weight: 400;
             background-color: rgba(0, 0, 0, 0.4); /* Adjust the alpha value (0.5) for darkness */
             /* You can use rgba to set the background color with transparency */
         }
+        .mobileviewwords {
+            color: #FFF;
+            text-align: center;
+            font-family: Poppins;
+            font-size: 30px;
+            font-style: normal;
+            z-index:30;
+           
+            margin-left: 20vw;
+            width:300px;
+            font-weight: 600;
+            line-height: 31.745px; /* 132.272% */
+        }
     } 
+    @media (max-width: 650px) {
+        .mobileviewwords {
+            margin-left: 30px;  
+            width:80vw;
+        }
+    }
      
        
 </style>
@@ -162,22 +181,12 @@ align-items: center;
 
 <div class='mobileview'>
     <div style='height:30vw;'></div>
-    <div style='color: #FFF;
-    text-align: center;
-    font-family: Poppins;
-    font-size: 30px;
-    font-style: normal;
-    z-index:30;
-   
-    margin-left: 20vw;
-    width:300px;
-    font-weight: 600;
-    line-height: 31.745px; /* 132.272% */'>Unlock your academic success with <span style='color: #FAA51A;
+    <div class='mobileviewwords'>Unlock your academic success with <span style='color: #FAA51A;
     font-family: Poppins;
     font-size: 30px;
     font-style: normal;
     font-weight: 600;
-    '>Otic</span></div>
+    '>Somesa AI</span></div>
     <div style='height:20px'></div>
     <div style='margin-left: 25vw;
     z-index:30;'>
@@ -203,13 +212,13 @@ align-items: center;
 
 <div style='color: white;
 font-family: Roboto;
-font-size: 16px;
+font-size: 18px;
 font-style: normal;
 margin-left: 25vw;
 font-weight: 400;
 '>Already Registered? <a href='{% url 'login' %}' ><span style='color: #FAA51A;
 font-family: Roboto;
-font-size: 16px;
+font-size: 18px;
 font-style: normal;
 z-index:301;
 font-weight: 500;

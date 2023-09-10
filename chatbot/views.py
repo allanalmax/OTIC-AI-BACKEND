@@ -234,7 +234,7 @@ def ask_openai(message,field_of_study,university,id):
 
 
 # Create your views here.
-@login_required(login_url='/login')
+@login_required(login_url='/landing')
 def chatbot(request):
     #print(request.user.username)
     logged_in_user =Profile.objects.get(user=request.user)

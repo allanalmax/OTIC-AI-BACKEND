@@ -25,6 +25,9 @@ import textract
 openai_api_key = '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'
 openai.api_key = openai_api_key
 
+def landing(request):
+    return render(request,'landingpage.html')
+
 def crop_text_to_limit(text, word_limit):
     words = text.split()
     if len(words) >= word_limit:

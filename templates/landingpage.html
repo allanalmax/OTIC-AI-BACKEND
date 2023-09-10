@@ -74,7 +74,7 @@ font-weight: 400;
             display:none; 
         }
     }  
-    @media (max-width: 600px) {
+    @media (max-width: 1000px) {
         .body::before {
             display:none;
         }
@@ -100,7 +100,7 @@ font-weight: 400;
     background-repeat: no-repeat;
     background-position: 80% center; /* Adjust the background position */
         }
-        .mobileview::before {
+        .mobileviews::before {
             z-index:5;
             content: "";
             position: absolute;
@@ -184,7 +184,7 @@ align-items: center;
     <div style='height:20px'></div>
 <div style=' display: flex;
 
-flex-direction:row;' >
+flex-direction:column;' >
 <button onclick="window.location.href='{% url 'register' %}'" style='border-radius: 56.352px;
 background: #1F12FD;
 border: 2px solid #1F12FD;
@@ -193,24 +193,26 @@ display: inline-flex;
 padding: 14.141px 70.407px 13.346px 70.503px;
 justify-content: center;
 color:white;
+max-width:200px;
 z-index:30;
 align-items: center;
 '>Get Started</button>
-</div>
 <div style='height:20px'></div>
 
-<div style='color: #FFF;
+<div style='color: white;
 font-family: Roboto;
 font-size: 16px;
 font-style: normal;
 margin-left: 25vw;
 font-weight: 400;
-line-height: 32.602px; /* 203.76% */'>Already Registered? <a href='{% url 'login' %}' ><span style='color: #FAA51A;
+'>Already Registered? <a href='{% url 'login' %}' ><span style='color: #FAA51A;
 font-family: Roboto;
 font-size: 16px;
 font-style: normal;
 z-index:301;
 font-weight: 500;
 line-height: 32.602px;'>Login</span></a></div>
+
+</div>
 </div>
 

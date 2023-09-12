@@ -293,7 +293,7 @@ def chatbot(request):
             replaced_value = 'N/A' 
             try:
                 for index,val in enumerate(sentence_portions,start=0):
-                    prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document :\n{val[0]}" 
+                    prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document and make sure every aspect is summarized:\n{val[0]}" 
                     resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university,request.user.id).replace('</br>',' ')
                     final_words = resp.replace('-','\n -')
                     if index== 0:

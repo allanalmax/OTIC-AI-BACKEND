@@ -336,7 +336,7 @@ def chatbot(request):
 
 def login(request):
     if request.method == 'POST':
-        username = request.POST['username']
+        username = request.POST['username'].strip()
         password = request.POST['password']
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
@@ -372,7 +372,7 @@ def register(request):
                 return redirect('chatbot')
             except Exception as e:
                 print(e)
-                error_message = 'Error creating account'
+                error_message = 'Username exists'
                 return render(request, 'register.html', {'error_message': error_message})
         else:
             error_message = 'Password dont match'

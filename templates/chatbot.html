@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load bootstrap_icons %}
 {% block styles %}
 <style>
     body, html {
@@ -13,6 +13,9 @@
 
     .messages-list {
       padding-left: 0;
+    }
+    button[type=submit]:hover {
+      border: 1px solid white;
     }
     /* The Modal */
 .modal {
@@ -60,13 +63,14 @@
     }
 
     .sent {
-      background-color: #dcf8c6;
+      
       align-self: flex-end;
     }
 
     .received {
       background-color: #f1f0f0;
       align-self: flex-start;
+      max-width:90vw;
     }
 
     .message-form {
@@ -93,6 +97,7 @@
       height: 100%;
       display: flex;
       flex-direction: column;
+      
     }
 
 .errorlist li::before {
@@ -130,7 +135,7 @@
 <div class="chat-container">
   <div class="card flex-grow-1">
    
-    <div class="card-body messages-box">
+    <div class="card-body messages-box" style='display: flex;'>
       
       <ul class="list-unstyled messages-list">
         
@@ -147,22 +152,29 @@
 
         {% for chat in chats %}
           {% if chat.user == request.user %}
+          <div style='height:40px'></div>
+          {% if chat.message != 'intial blah' %}
 
             <li class="message sent">
-          <div class="message-text">
+          <div style='background-color:#EBA352; 
+          margin-left:40vw;
+          
+           width:50vw' class="message-text">
             <div class="message-sender">
-              <b>You</b>
+              
             </div>
-            <div class="message-content">
+            
+            <div style='color:white;margin-right:0px; width:100px'  class="message-content">
               {{chat.message}}
             </div>
+
           </div>
         </li>
-
+        {% endif %}
         <li class="message received">
           <div class="message-text">
             <div class="message-sender">
-              <b>SomesaAI Chatbot</b>
+            
             </div>
             <div class="message-content">
               {{chat.response|linebreaksbr|safe }}
@@ -184,12 +196,25 @@
 
   <form class="message-form" enctype="multipart/form-data" >
     {%csrf_token%}
-    <div class="input-group">
-      <input type="text" class="form-control message-input" placeholder="Type your message...">
-      <div class="input-group-append">
-        <button type="submit" class="btn btn-primary btn-send">Send</button>
-        <button class="btn btn-primary btn-send" onclick="openModal()">Upload </button>
-        
+    <div style='max-width:90vw' class="input-group">
+     
+      <input style=' border: 1px solid grey;height:50px;border-radius:10px' type="text" class="form-control message-input" placeholder="Type your message...">
+      <div  class="input-group-append">
+       
+   
+        <button type="submit" style='background-color:white;
+        border: 1px solid white;
+        max-height:50px;
+        padding: 10px 20px;
+        ' > {% bs_icon 'send'  color='#EBA352'  size='30px' extra_classes="bi-valign-default" %}</button>
+       
+        <button style='background-color:white;
+      
+        max-height:50px;
+        border: 1px solid white;
+        padding: 10px 20px;
+        border-radius:10px
+        ' onclick="openModal()"> {% bs_icon 'plus'  color='#EBA352'  size='29px' extra_classes="bi-valign-default" %}</button>
       </div>
     </div>
   </form>
@@ -227,11 +252,13 @@
     const messageItem = document.createElement('li');
     messageItem.classList.add('message', 'sent');
     messageItem.innerHTML = `
-        <div class="message-text">
-            <div class="message-sender">
-                <b>You</b>
+        <div style='background-color:#EBA352; margin-left:40vw;
+          
+width:50vw'  class="message-text">
+            <div style='color:white' class="message-sender">
+                
             </div>
-            <div class="message-content">
+            <div style='color:white' class="message-content">
                 ${message}
             </div>
         </div>`;
@@ -255,7 +282,7 @@
         messageItem.innerHTML = `
         <div class="message-text">
             <div class="message-sender">
-              <b>SomesaAI Chatbot</b>
+             
             </div>
             <div class="message-content">
                 ${response}

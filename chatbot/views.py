@@ -239,6 +239,16 @@ def chatbot(request):
     #print(request.user.username)
     logged_in_user =Profile.objects.get(user=request.user)
     chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
+    if len(chats)==0:
+         print('here')
+         response2 = ask_openai(''' 
+         welcome me first me to you , 
+         introduce yourself, user give me some stuff about or for my course and important information 
+         about my course and career expectations 
+         less than 100 words, remember youre called Somesa AI''',logged_in_user.course,logged_in_user.university,request.user.id)
+         chat = Chat(user=request.user, message='intial blah', response=response2.replace('</br>','\n'), created_at=timezone.now())
+         chat.save()
+         chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
     for chat in chats:
         parts = chat.response.split('-')
         chat.response_parts = [part.strip() for part in parts if part.strip()]

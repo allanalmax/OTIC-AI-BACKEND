@@ -225,7 +225,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary btn-send"  type="submit">Upload</button>
+        <button style='background-color:#EBA352; border: 1px solid #EBA352;' class="btn btn-primary btn-send"  type="submit">Upload</button>
     </form>
     </div>
 </div>
@@ -253,7 +253,7 @@
     messageItem.classList.add('message', 'sent');
     messageItem.innerHTML = `
         <div style='background-color:#EBA352; margin-left:40vw;
-          
+
 width:50vw'  class="message-text">
             <div style='color:white' class="message-sender">
                 

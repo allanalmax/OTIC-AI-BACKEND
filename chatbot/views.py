@@ -199,7 +199,7 @@ Policy '''
 def ask_openai(message,field_of_study,university,id):
     uzer = User.objects.get(id=id)
     try:
-     chats = Chat.objects.filter(user =uzer).order_by('-id')[:2]
+     chats = Chat.objects.filter(user =uzer).order_by('-id')[:4]
     except Exception as e:
         print(e)
         chats = []

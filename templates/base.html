@@ -87,14 +87,6 @@ header {
    
     </style>
     <script>
-     
-const container = document.querySelector('.container');
-
-container.addEventListener('click', (e) => {
-    if (e.target === container) {
-        sidebar.style.transform = 'translateX(-100%)';
-    }
-});
       function toggleSidebar() {
         var sidenav = document.querySelector('.sidenav');
         
@@ -106,7 +98,16 @@ container.addEventListener('click', (e) => {
            
         }
     }
-    
+    </script>
+    <script>
+      function closeSidebar() {
+        var sidenav = document.querySelector('.sidenav');
+        
+       
+            sidenav.style.left = '-400px'; // Hide the sidebar
+           
+       
+    }
     </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -144,14 +145,19 @@ container.addEventListener('click', (e) => {
    
 </div>
 
-<header>     
-</header>
-<div>{% block content %}{% endblock %}  
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  {% block scripts %}{% endblock %}
- </div>
+<header>
+  
 
+    
+ 
+ 
+      
+</header>
+{% block content %}{% endblock %}  
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></scrip>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    {% block scripts %}{% endblock %}
+   
 </body>
 </html>

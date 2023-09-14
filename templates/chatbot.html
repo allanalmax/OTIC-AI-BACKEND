@@ -132,6 +132,7 @@
 
 
 {% block content %}
+<div class='slide-body' onclick='closeSidebar()' >
 <div class="chat-container">
   <div class="card flex-grow-1">
    
@@ -231,7 +232,7 @@
 </div>
 
 </div>
-
+</div>
 <script>
   window.onload = function() {
     var content = document.querySelector(".card-body messages-box");

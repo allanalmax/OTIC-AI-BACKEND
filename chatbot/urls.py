@@ -11,6 +11,7 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('register', views.register, name='register'),
     path('logout', views.logout, name='logout'),
+     path('pricing', views.pricing, name='pricing'),
       
  #    path('upload/', views.upload_document, name='upload_document'),
 ]

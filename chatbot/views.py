@@ -30,6 +30,8 @@ def crop_text_to_limit(text, word_limit):
 
 def home_load(request):
     return render(request,'home.html')
+def pricing(request):
+    return render(request,'pricing.html')
 
 def extract_text_from_pdf(pdf_path):
    # with open(pdf_path, 'rb') as pdf_file:# open in binary read mode ('rb')

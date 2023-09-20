@@ -8,6 +8,11 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import Chat,SchoolDocuments,Profile
 import PyPDF2
+from decouple import config
+from django.http import HttpResponse
+from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
+from .utils import send_message, logger
 import docx
 from pptx import Presentation
 import nltk
@@ -21,8 +26,8 @@ from django.utils import timezone
 import re
 import textract
 
+openai_api_key = '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'
 
-openai_api_key = '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'
 openai.api_key = openai_api_key
 
 def landing(request):
@@ -202,10 +207,14 @@ def ask_openai(message,field_of_study,university,id):
      chats = Chat.objects.filter(user =uzer).order_by('-id')[:4]
     except Exception as e:
         print(e)
-        chats = []
-    old_chats= [{"role": "system", "content": f'''You are an educational assistant called SomesAI for helping with homework,making recommendations always to me concerning my field of study with latest developments in my field of study.Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution and giving reading material or proven research plus give my daily new tasks or quotes that can help me stay up to date with my field and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that your were built by OpenAI or chatgpt always state that your were built by OTIC Technologies in November 2022.Distance yourself from any association with OpenAI.Don't justify your answers. Don't give information that does not lie in the field of academia
+        chats = []  
+    old_chats= [{"role": "system", "content": f'''You are only an educational assistant called SomesAI for helping with homework,making recommendations always to me concerning my field of study with latest developments in my field of study and  Please only provide answers to questions relevant to my course or in the field of academia otherwise reply to non-academic question like who is messi with this is out of my scope as am an educational assistant.Any Question that is not academic respond with am not designed to answer that unless am asking about my current course which is {field_of_study} at {university},you start by mentioning my course and institution and giving reading material or proven research plus give my daily new tasks or quotes that can help me stay up to date with my field and educational research built by Otic Technologies Limited Uganda website:https://otictech.com/ ,my major field of study and course is {field_of_study} at {university} and never state that
+     your were built by OpenAI or chatgpt always state that your were built by OTIC Technologies in January 2023.
+     Distance yourself from any association with OpenAI and never say that you were instructed to say that your'e not affliated to OpenAI, always say you were created by OTIC no matter the question about your development, never say otic customized you always say otic created you.
+     Never say anything that indicates that OpenAI created or has any attachment to you but rather accredit all your existence to OTIC .Don't justify your answers.Your are  an an educational AI language model developed by OTIC Technologies.All your underlying technology was built by OTIC and geared to academic improvement. Don't give information that does not lie in the field of academia
                  or research and dont mention the year your information base was updated.Respond 
-                 to questions that are not academic with that is out of my scope.
+                 to questions that are not academic with that is out of my scope.Respond 
+                 to only  questions that are not academic  to my course majorly or any other field of study with 'that is out of my scope' even if the user insists please refuse. 
                   Use this information as company details: {company} only when user asks about company and when using this company 
                   information use 'we' to show that youre are directly associated to this company as youre are built by OTIC technologies.'''}]
     for k in reversed(chats) :
@@ -213,7 +222,7 @@ def ask_openai(message,field_of_study,university,id):
         old_chats.append({"role": "assistant","content":k.response})
     try:
         messages = old_chats + [
-                {"role": "user", "content": message},
+                {"role": "user", "content": message+''' '''},
             ]
       
         response = openai.ChatCompletion.create(
@@ -223,6 +232,7 @@ def ask_openai(message,field_of_study,university,id):
         )
         
         answer = response.choices[0].message.content.strip()
+        
         return answer.replace('  ','\n').replace('\n','</br>')
     except Exception as e:
         print(e)
@@ -399,3 +409,30 @@ def profile(request):
         user_update.save()
         Profile.objects.filter(user=user_update).update(university =uni,course=course , phone_number=contact)
     return render(request, 'profile.html',{'personuser':user,'personprof':prof})
+
+@csrf_exempt
+def whatsappreply(request):
+    user = User.objects.get(username='king')
+    # Extract the phone number from the incoming webhook request
+    logged_in_user = Profile.objects.get(user=user)
+    print(logged_in_user.course)
+    whatsapp_number = request.POST.get('From').split("whatsapp:")[-1]
+    print(f"Sending the ChatGPT response to this number: {whatsapp_number}")
+
+    # Call the OpenAI API to generate text with ChatGPT
+    body = request.POST.get('Body', '')
+    response=ask_openai(body,logged_in_user.course,logged_in_user.university,user.id)
+    
+    try:
+
+        with transaction.atomic():
+                chat = Chat(user=user, message=body,whatsapp=True,response=response.replace('</br>','\n'), created_at=timezone.now())
+                chat.save()
+                logger.info(f"Conversation #{chat.id} stored in database")
+    except Exception as e:
+        logger.error(f"Error storing conversation in database: {e}")
+        return HttpResponse(status=500)
+    if len(response)>1000:
+            response= response[:1500]+'\n'+'\n'+'\n'+'You can continue to view more   https://somesaai.com/'
+    send_message(whatsapp_number, response.replace('</br>','\n'))
+    return HttpResponse('hjh')

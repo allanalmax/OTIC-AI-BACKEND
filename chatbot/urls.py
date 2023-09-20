@@ -11,6 +11,7 @@ urlpatterns = [
       path('landing', views.landing, name='landing'),
      path('profile', views.profile, name='profile'),
     path('register', views.register, name='register'),
+    path("message/", views.whatsappreply,name='whatsapp'),
     path('logout', views.logout, name='logout'),
       
  #    path('upload/', views.upload_document, name='upload_document'),

@@ -297,7 +297,7 @@ min-height:50px;
 
   messageForm.addEventListener('submit', (event) => {
     event.preventDefault();
-
+    
     const message = messageInput.value.trim();
     if (message.length === 0) {
       return;
@@ -346,7 +346,8 @@ width:50vw'  class="message-text">
         messagesList.appendChild(messageItem);
       });
 
-
+      var recodbox = document.querySelector('.default-messages');
+      recodbox.style.display = 'none';
 
   });
 

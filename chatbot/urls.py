@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth.views import PasswordResetView
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
@@ -13,6 +14,9 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path("message/", views.whatsappreply,name='whatsapp'),
     path('logout', views.logout, name='logout'),
-      
- #    path('upload/', views.upload_document, name='upload_document'),
+      path('find/',views.FindReset,name='find'),
+path('reset/done/', views.password_reset_complete, name="password_reset_complete"),
+   path('password-reset/', PasswordResetView.as_view(template_name='changepassword.html'), name='password-reset'),
+   path('activate/<uid64>/<token>', views.activate, name="activate"),
+   
 ]

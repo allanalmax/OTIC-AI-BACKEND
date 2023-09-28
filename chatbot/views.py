@@ -1,8 +1,19 @@
 from os import name
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.contrib import messages
+from django.conf import settings
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+
+from .forms import CustomSetPasswordForm
+from .token import generate_token
 import openai
 from .forms import DocumentForm
+from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.contrib.auth.models import User
@@ -436,3 +447,67 @@ def whatsappreply(request):
             response= response[:1500]+'\n'+'\n'+'\n'+'You can continue to view more   https://somesaai.com/'
     send_message(whatsapp_number, response.replace('</br>','\n'))
     return HttpResponse('hjh')
+
+
+def FindReset(request):
+    if request.method == 'POST':
+        reset = request.POST['reset'].strip()
+        if User.objects.filter(username=reset).exists():
+            myuser = User.objects.get(username=reset)
+            current_site = get_current_site(request)
+            email_subject = 'Reset Password'
+            message2 = render_to_string("email.html", {
+                'name': myuser.first_name,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(myuser.username)),
+                'token': generate_token.make_token(myuser)
+            })
+            email = EmailMessage(
+                email_subject,
+                message2,
+                settings.EMAIL_HOST_USER,
+                [myuser.email],
+            )
+            email.fail_silently = False
+            try:
+                email.send()
+                messages.error(request, f'Reset email sent successfully to {myuser.email} Incase you dont see email, check your spam folder')
+                return render(request, 'find.html')
+            except Exception as e:
+                messages.error(request, f'Failed to send email because {e}')
+                return render(request, 'find.html')
+
+        else:
+            messages.error(request, f'{reset} username does not exist')
+            return render(request, 'find.html')
+
+    return render(request,'find.html')
+
+def password_reset_complete(request):
+    return render(request, 'password_reset_complete.html')
+def test(request):
+    user = User.objects.get(username='mugumbyabenon')
+    form = CustomSetPasswordForm(user)
+    if request.method == 'POST':
+        form = CustomSetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('password_reset_complete')
+    return render(request,'changepassword.html',{'form':form})
+def activate(request, uid64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uid64))
+        myuser = User.objects.get(username=uid)
+    except (TypeError, ValueError, OverflowError):
+        myuser = None
+    if myuser is not None and generate_token.check_token(myuser, token):
+        form = CustomSetPasswordForm(myuser)
+        if request.method == 'POST':
+            form = CustomSetPasswordForm(myuser, request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('password_reset_complete')
+        return render(request, 'changepassword.html', {'form': form})
+
+    else:
+        return HttpResponse('Invalid token')

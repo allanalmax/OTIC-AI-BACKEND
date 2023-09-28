@@ -1,0 +1,5 @@
+{% autoescape off %}
+Hello {{ name }}
+Please confirm password reset by clicking on the following link.
+Reset confirmation link: http://{{ domain }}{% url 'activate' uid64=uid token=token  %}
+{% endautoescape  %}

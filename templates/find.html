@@ -1,0 +1,32 @@
+ {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% load bootstrap_icons %}
+  {% bootstrap_javascript %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+
+</head>
+{% if messages %}
+     {% for message in messages  %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong>{{ message }}</strong>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+     {% endfor %}
+  {% endif %}
+<center><form method="post">
+    {%csrf_token%}
+     <div class="form-field">
+    <input type="text" name="reset" style="width:70vw;" placeholder="Enter username  you used to sign up" required/> </div>
+
+  <div class="row justify-content-around" style="display: inline-block;">
+    <div style="display: inline-block;" >
+    <button class="btn" style="background-color:#FFA500;display: inline-block;" type="submit">Request</button>
+  </div>
+</form></center>

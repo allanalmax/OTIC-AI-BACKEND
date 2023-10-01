@@ -109,7 +109,7 @@ background: #3D5EE1;
   .center-word {
       position: relative;
     margin-left: 51%;
-     width:30px;
+     width:24px;
       transform: translate(-50%, -50%);
       background-color: white;
       
@@ -118,6 +118,15 @@ background: #3D5EE1;
     /* Font size for smaller screens */
     .cards {
         display: none;
+    }
+    .horizontal-line {
+      width: 400px;
+    }
+    .center-word {
+      margin-left: 190px;
+    }
+    button[type=submit] {
+      margin-left: 90px;
     }
 
     /* Additional mobile-specific styling here */
@@ -152,7 +161,7 @@ background: #3D5EE1;
         <a href='find/'>Forgot Password?<a/>
         <button type="submit">Login</button> <div class='divider'></div>
         <div class="horizontal-line"></div>
-        <div class="center-word"> OR</div>
+        <div class="center-word">OR</div>
         
       </form>
       <button onclick="window.location.href='{% url 'register' %}'"  style='width: 368px;

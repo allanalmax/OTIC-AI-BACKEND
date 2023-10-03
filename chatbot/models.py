@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -26,3 +28,4 @@ class SchoolDocuments(models.Model):
 class Document(models.Model):
     
     file = models.FileField(upload_to='documents/')
+    

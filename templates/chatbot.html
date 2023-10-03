@@ -134,6 +134,21 @@ min-height:50px;
 .default-messages .content:active {
   border-color: #f1f0f0;
 }
+.btn-primary {
+  background-color:#EBA352; 
+  border: 1px solid #EBA352;
+  display:none;
+}
+.btn-send {
+  background-color:#EBA352; 
+  border: 1px solid #EBA352;
+  display:block;
+}
+.btn-send:hover {
+  background-color:#EBA352; 
+  border: 1px solid #EBA352;
+  display:block;
+}
 @media (max-width: 600px) {
   .default-messages .content {
     width: 90vw;
@@ -275,10 +290,15 @@ min-height:50px;
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Upload a Document</h2>
-    <form method="post" enctype="multipart/form-data">
+    <form class='uploadForm' method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button style='background-color:#EBA352; border: 1px solid #EBA352;' class="btn btn-primary btn-send"  type="submit">Upload</button>
+       
+        <button id='lupload' style='background-color:#EBA352; border: 1px solid #EBA352;' class="btn btn-primary" type="button" disabled>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Loading...
+        </button>
+        <button id='fupload' style='' class="btn btn-primary btn-send"  type="submit">Upload</button>
     </form>
     </div>
 </div>
@@ -293,7 +313,16 @@ min-height:50px;
 };
   const messagesList = document.querySelector('.messages-list');
   const messageForm = document.querySelector('.message-form');
+  const uploadForm = document.querySelector('.uploadForm');
   const messageInput = document.querySelector('.message-input');
+
+  uploadForm.addEventListener('submit', (event) => {
+   // event.preventDefault();
+    var fupload = document.getElementById("fupload");
+    var lupload = document.getElementById("lupload");
+    fupload.style.display = "none";
+    lupload.style.display = "block";
+  })
 
   messageForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -431,5 +460,22 @@ width:50vw'  class="message-text">
       
 }
 
+function validateFile() {
+  var fileInput = document.getElementById('{{ form.file.id_for_label }}');
+  var fileSizeError = document.getElementById('fileSizeError');
+  var maxSize = 1 * 1024 * 1024; // 1 MB
+
+  if (fileInput.files.length > 0) {
+      var fileSize = fileInput.files[0].size;
+      
+      if (fileSize > maxSize) {
+          fileSizeError.textContent = 'File size must be no more than 1 MB.';
+          fileInput.value = ''; // Clear the file input
+      } else {
+          fileSizeError.textContent = '';
+      }
+  }
+}
+document.getElementById('{{ form.file.id_for_label }}').addEventListener('change', validateFile);
 </script>
 {% endblock %}

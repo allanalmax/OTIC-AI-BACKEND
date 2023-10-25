@@ -6,8 +6,12 @@
      
     </button>
     <div style='height:20px;'></div>
+    {% for kf in personprof %}
+    <h5>Subscription End: <span style='font-size:15px;color:green'>{{ kf.subscription_end_date  }}<span></h5>
+    {% endfor %}
     <form  method="post" style="max-width: 50em; margin: 0 auto;"> 
         {% for k in personuser %}
+       
         <label style="display:flex;flex-direction:row; min-width:70px;">Full Names 
         <div style="width:20px;"></div>
         <input name='names' value='{{ k.first_name  }}' class="form-control" style="height: 2em; width: 100%; max-width: 400px;" type="text"></label> </br>

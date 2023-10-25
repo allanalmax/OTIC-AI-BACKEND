@@ -8,23 +8,30 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-
+from PIL import Image, ImageEnhance, ImageFilter
 from .forms import CustomSetPasswordForm
 from .token import generate_token
+import requests
+from django.views.decorators.http import require_POST
+import json
 import openai
 from .forms import DocumentForm
 from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
+import PIL.Image as Imag
 from django.contrib.auth.models import User
-from .models import Chat,SchoolDocuments,Profile
+from .models import Chat,SchoolDocuments,Profile,FlutterwaveDetails,TransactionsDetails
 import PyPDF2
+from rave_python import Rave, RaveExceptions, Misc
+import easyocr
 from decouple import config
 from django.http import HttpResponse
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 from .utils import send_message, logger
 import docx
+import time
 from pptx import Presentation
 import nltk
 nltk.download('punkt')
@@ -36,6 +43,10 @@ from sumy.summarizers.lex_rank import LexRankSummarizer
 from django.utils import timezone
 import re
 import textract
+from python_flutterwave import payment
+import pytesseract
+
+flut = FlutterwaveDetails.objects.get(id=1)
 
 openai_api_key = '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'
 
@@ -43,6 +54,39 @@ openai.api_key = openai_api_key
 
 def landing(request):
     return render(request,'landingpage.html')
+
+def preprocess_image(img_path):
+    img = Image.open(img_path)
+
+    # Resize image (adjust dimensions as needed)
+    img = img.resize((800, 800))
+
+    # Convert to grayscale
+    #img = img.convert('L')
+
+    # Apply contrast enhancement
+    enhancer = ImageEnhance.Contrast(img)
+    img = enhancer.enhance(2.0)
+
+    # Apply Gaussian blur to reduce noise
+    img = img.filter(ImageFilter.GaussianBlur(radius=2))
+
+    return img
+
+def extract_text_with_confidence(img_path, confidence_threshold=60):
+    #preprocessed_img = preprocess_image(img_path)
+    image = Image.open(img_path)
+    
+    # Perform OCR on the preprocessed image
+    text = pytesseract.image_to_string(image)
+    '''reader = easyocr.Reader(['en', 'fr']) 
+    results = reader.readtext(image)
+    results = '\n'.join(result[1] for result in results)'''
+    # Split text into sentences and add line breaks
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
+    formatted_text = '\n'.join(sentences)
+
+    return text
 
 def crop_text_to_limit(text, word_limit):
     words = text.split()
@@ -82,10 +126,11 @@ def extract_text_from_pdf(pdf_path):
                 return text            
             except: 
                 try:
-                    text = textract.process(pdf_path).decode("utf-8")
-                    print('tfgfddfdf')
-                    return text
-                except:       
+                    text = extract_text_with_confidence(pdf_path)
+                
+                    return {'text':text}
+                except Exception as e:   
+                    print(e)    
                     chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document type', created_at=timezone.now())
                     chat.save()  
                     return redirect('/')     
@@ -247,7 +292,9 @@ def ask_openai(message,field_of_study,university,id):
         return answer.replace('  ','\n').replace('\n','</br>')
     except Exception as e:
         print(e)
-        return redirect('/')    
+        answer = ''
+        return answer
+            
 
 
 
@@ -257,8 +304,32 @@ def ask_openai(message,field_of_study,university,id):
 # Create your views here.
 @login_required(login_url='/landing')
 def chatbot(request):
-    #print(request.user.username)
+    for dt in TransactionsDetails.objects.filter(user=request.user,complete=False):
+        txref = dt.trans_id
+        secret_key = flut.secret_key
+
+        url = "https://api.flutterwave.com/v3/transactions/verify_by_reference?tx_ref={}".format(txref)
+
+        headers = {"Authorization": "Bearer {}".format(secret_key)}
+
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        if response.status_code == 200:
+            
+            transaction_id = data["data"]["id"]
+            process_payment(transaction_id,txref)
+        else:
+            print("Error: {}".format(data))
     logged_in_user =Profile.objects.get(user=request.user)
+    current_datetime = timezone.now()
+    if logged_in_user.subscription_end_date is not None and current_datetime < logged_in_user.subscription_end_date:
+        subscription = True
+    else:
+     if Chat.objects.filter(user=request.user,message='uploaded document').count() > 5:
+       subscription = False
+     else:
+        subscription = True  
+            
     chats = Chat.objects.filter(user=request.user).order_by('-id')[:1]
     if len(chats)==0:
          print('here')
@@ -275,12 +346,16 @@ def chatbot(request):
         chat.response_parts = [part.strip() for part in parts if part.strip()]
     form = DocumentForm(request.POST, request.FILES)
     if request.method == 'POST':
-        
+        summ_or_extract = False
+        image_answers = ''
         if form.is_valid():
             document = form.save()
             uploaded_doc = request.FILES['file']
             try:
              doc = extract_text_from_pdf(request.FILES['file'])
+             if type(doc) is dict:
+                summ_or_extract = True
+                doc = doc['text']
             except:
                 try:
                     text = textract.process(request.FILES['file']).decode("utf-8")
@@ -295,7 +370,9 @@ def chatbot(request):
             summarizer = LexRankSummarizer()
             sentences_count = 5  # Adjust this value to the desired length
             summary = summarizer(parser.document, sentences_count)  # You can adjust the sentence count
+            
             prompt = f"Summarize the following text:\n{doc}" 
+            
             sentence = nlp(doc) 
             print('here')   
             sentences = [sent for sent in sentence.sents]
@@ -324,15 +401,29 @@ def chatbot(request):
             replaced_value = 'N/A' 
             try:
                 for index,val in enumerate(sentence_portions,start=0):
-                    prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document and make sure every aspect is summarized:\n{val[0]}" 
-                    resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university,request.user.id).replace('</br>',' ')
-                    final_words = resp.replace('-','\n -')
+                    if summ_or_extract == False:
+                      prompt = f"Summarize the following text, outlining the major points using bullets so that i dont have to read the whole document and make sure every aspect is summarized:\n{val[0]}" 
+                      resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university,request.user.id).replace('</br>',' ')
+                    
+                      final_words = resp.replace('-','\n -')
+                    else:
+                        prompt = f'''Using this text; \n"{doc}"\n Look through the above text as it is my assignment given to me for my course and do the required work. Provide me with any relevant solutions,answeres and extract any and all  questions encountered and give me answers to all  questions while clearly stating 
+                        the question  and then providing the answer. Help me find all the answers, solutions and approaches to pass my assignment while clearly writing each solution to any part of the assignment in a new paragraph and new lines.Make sure you provide solutions to all the questions in the text from the first question to the last question or analyze from the first line of the text to the last line. Just only state question number and solution only as your response 
+                        . '''  
+                        resp = ask_openai(prompt,logged_in_user.course,logged_in_user.university,request.user.id).replace('</br>',' ')
+                    
+                        final_words = resp.replace('  ','\n ')
+                    
                     if index== 0:
+                            if subscription == False:
+                                final_words='Subscription Expired. Please recharge to continue.'
                             chat = Chat(user=request.user, message='uploaded document', response=final_words.replace('</br>',' '), created_at=timezone.now())
                             chat.save()
                             summarized_id = chat.id
                             
                     else:
+                        if subscription == False:
+                            break
                         update = Chat.objects.get(id=summarized_id)
                         update.response =  update.response + final_words
                         update.save()
@@ -349,11 +440,104 @@ def chatbot(request):
             message = request.POST.get('message')
             response = ask_openai(message,logged_in_user.course,logged_in_user.university,request.user.id)
             #response = response
-            chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
-            chat.save()
+            try:
+                
+                chat = Chat(user=request.user, message=message, response=response.replace('</br>','\n'), created_at=timezone.now())
+                chat.save()
+            except:
+                    chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document type', created_at=timezone.now())
+                    chat.save()  
+                    return redirect('/')      
             return JsonResponse({'message': message, 'response': response})
-    return render(request, 'chatbot.html', {'chats': chats,'form': form})
+    return render(request, 'chatbot.html', {'chats': chats,'subscription':subscription,'form': form})
 
+
+@require_POST
+@csrf_exempt
+def process_payment_api(request):
+    
+    secret_hash = flut.secret_hash
+    signature = request.headers.get('Verif-Hash')
+    if signature == None or (signature != secret_hash):
+        # This request isn't from Flutterwave; discard
+        return HttpResponse(status=401)
+    payload = request.body
+    data = json.loads(payload)
+    # It's a good idea to log all received events.
+    data_id = data['data']['id']
+    data_tx_ref = data['data']['tx_ref']
+    
+    print(data_id,data_tx_ref)
+    process_payment(data_id,data_tx_ref)
+    return HttpResponse(status=200)
+def process_payment(data_id,data_tx_ref):
+    verify = verify_payment(data_id)
+    transact = TransactionsDetails.objects.get(trans_id=data_tx_ref)
+    print('verify',verify)
+    if verify == True:  
+        current_datetime = timezone.now()
+        prof = Profile.objects.get(user= transact.user)
+        if prof.subscription_end_date is not None and current_datetime < prof.subscription_end_date:
+            new_datetime = prof.subscription_end_date + timezone.timedelta(days=transact.number_of_days)
+            prof.subscription_end_date = new_datetime
+            prof.save() 
+        else:
+            new_datetime = current_datetime + timezone.timedelta(days=transact.number_of_days)
+            prof.subscription_end_date = new_datetime
+            prof.save()     
+    # Do something (that doesn't take too long) with the payload
+    transact.complete = True
+    transact.save()
+def verify_payment(id):
+    url = f'https://api.flutterwave.com/v3/transactions/{id}/verify'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {flut.secret_key}',
+    }
+    while True:
+     try:   
+      response = requests.get(url, headers=headers)
+      
+      break
+     except:
+        continue 
+
+    # Check the response
+    try:
+        if response.status_code == 200:
+            # Successful request, you can process the response content
+            data = response.json()
+            if data['status'] == 'success':
+            
+             return True
+            else:
+                return False 
+        else:
+            # Request failed, print the error status code and content
+            print(f"Request failed with status code {response.status_code}: {response.text}")
+            return False  
+    except:
+        return False         
+
+@login_required(login_url='/landing')
+def intiate_payment(request,days,amount):
+    now = timezone.now()
+    timestamp = now.strftime("%Y-%m-%d-%H-%M-%S.%f")
+    txref = f"somesaAI-{timestamp}"
+    pub_key = flut.pub_key
+    context = {'public_key':pub_key,
+    "email":request.user.email,
+    "name":request.user.first_name ,
+    "tx_ref":txref,
+    "token":request.user.id,
+    'amount':int(amount),
+    "redirect_url":"https://www.somesaai.com/"
+    }  
+    if request.method == 'POST' or request.method == 'GET':
+        transct = TransactionsDetails(trans_id=txref,number_of_days=int(days),user=request.user,amount=int(amount))    
+        transct.save()
+        
+    return render(request,'payments.html', context)
 
 def login(request):
     if request.method == 'POST':
@@ -383,6 +567,9 @@ def register(request):
         print(names)
         if password1 == password2:
             try:
+                if User.objects.filter(email=email).exists() :
+                    error_message = f'User with email: {email} already exists'
+                    return render(request, 'register.html', {'error_message': error_message})
                 user = User.objects.create_user(username, email, password1)
                 user.first_name = names.strip()
                 user.save()

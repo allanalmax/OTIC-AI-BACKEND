@@ -149,6 +149,26 @@ min-height:50px;
   border: 1px solid #EBA352;
   display:block;
 }
+.start-payment-button {
+  cursor: pointer;
+  position: relative;
+  background-color: blueviolet;
+  color: #fff;
+  max-width: 80%;
+  padding: 10px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: none;
+  transition: all .1s ease-in;
+}
+.start-payment-button {
+background-color: orange; /* Change the background color of the button */
+color: #FFFFFF; /* Change the text color of the button */
+font-size: 16px; /* Change the font size of the button text */
+border-radius: 20px; /* Change the border radius of the button */
+}
 @media (max-width: 600px) {
   .default-messages .content {
     width: 90vw;
@@ -289,7 +309,8 @@ min-height:50px;
   <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>Upload a Document</h2>
+        {% if subscription  %}
+        <h3>Upload a Document/Image</h3>
     <form class='uploadForm' method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
@@ -300,11 +321,34 @@ min-height:50px;
         </button>
         <button id='fupload' style='' class="btn btn-primary btn-send"  type="submit">Upload</button>
     </form>
+    {% else %}
+    <div class='uploadForm' >
+      <div>Your free trial has expired. Please make payment below to interact with documents.</div>
+      <div style='height:10px;'></div>
+       <button id='lupload' style='background-color:#EBA352; border: 1px solid #EBA352;' class="btn btn-primary" type="button" disabled>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Loading...
+        </button>
+        <div style='display:flex;flex-direction:column;'>
+        <button id='fupload' style='' class="start-payment-button" onclick="redirectToInitiatePayment(1, 500)"  >1 Day</button>
+        <button id='fupload' style='' class="start-payment-button" onclick="redirectToInitiatePayment(7, 3000)"  >1 Week</button>
+        <button id='fupload' style='' class="start-payment-button" onclick="redirectToInitiatePayment(30, 10000)"  >1 Month</button> 
+      </div>
+      </div>
+    {% endif %}
     </div>
 </div>
 
 </div>
 </div>
+<script>
+  function redirectToInitiatePayment(days, amount) {
+    // Construct the URL using the template tag and provided parameters
+    var url = `/intiate-payments/${encodeURIComponent(days)}/${encodeURIComponent(amount)}`;
+    // Redirect to the constructed URL
+    window.location.href = url;
+} 
+</script>
 <script>
   
   window.onload = function() {

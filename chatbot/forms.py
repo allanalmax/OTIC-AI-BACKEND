@@ -33,7 +33,7 @@ class DocumentForm(forms.ModelForm):
         fields = ('file',)
     error_css_class = 'errorlist'
     file = forms.FileField(
-        help_text='Upload a PDF,PPTX or DOCX file. Max size is 1 MB',
+        help_text='Max size is 1 MB',
         
     )
     def clean_file(self):

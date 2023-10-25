@@ -6,8 +6,9 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-   # path('', views.home_load, name='home'),
+   path('intiate-payments/<days>/<amount>', views.intiate_payment, name='intiate_payment'),
     path('', views.chatbot, name='chatbot'),
+    path('process_payment', views.process_payment_api, name='process-payment'),
     path('login', views.login, name='login'),
       path('landing', views.landing, name='landing'),
      path('profile', views.profile, name='profile'),

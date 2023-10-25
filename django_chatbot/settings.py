@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'chatbot',
      'django_bootstrap_icons',
       'bootstrap5',
-      'bootstrapsidebar'
+      'bootstrapsidebar',
+      'easyocr'
 ]
 
 MIDDLEWARE = [

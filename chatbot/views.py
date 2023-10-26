@@ -314,11 +314,15 @@ def chatbot(request):
 
         response = requests.get(url, headers=headers)
         data = response.json()
+        print(type(data))
         if response.status_code == 200:
             
             transaction_id = data["data"]["id"]
             process_payment(transaction_id,txref)
         else:
+            if data['message']== 'No transaction was found for this id':
+                dt.complete = True
+                dt.save()
             print("Error: {}".format(data))
     logged_in_user =Profile.objects.get(user=request.user)
     current_datetime = timezone.now()

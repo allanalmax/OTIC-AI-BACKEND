@@ -46,7 +46,7 @@ INSTALLED_APPS = [
      'django_bootstrap_icons',
       'bootstrap5',
       'bootstrapsidebar',
-      'easyocr'
+      #'easyocr'
 ]
 
 MIDDLEWARE = [

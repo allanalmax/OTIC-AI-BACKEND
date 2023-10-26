@@ -24,7 +24,7 @@ from django.contrib.auth.models import User
 from .models import Chat,SchoolDocuments,Profile,FlutterwaveDetails,TransactionsDetails
 import PyPDF2
 from rave_python import Rave, RaveExceptions, Misc
-import easyocr
+
 from decouple import config
 from django.http import HttpResponse
 from django.db import transaction

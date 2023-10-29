@@ -4,6 +4,6 @@ from .models import Chat,SchoolDocuments,Profile,TransactionsDetails,Flutterwave
 # Register your models here.
 admin.site.register(Chat)
 admin.site.register(SchoolDocuments)
-admin.site.register(Profile)
+#admin.site.register(Profile)
 admin.site.register(FlutterwaveDetails)
-admin.site.register(TransactionsDetails)
+#admin.site.register(TransactionsDetails)

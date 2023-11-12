@@ -288,8 +288,19 @@ def ask_openai(message,field_of_study,university,id):
         )
         
         answer = response.choices[0].message.content.strip()
-        
-        return answer.replace('  ','\n').replace('\n','</br>')
+        logged_in_user =Profile.objects.get(user=uzer)
+        current_datetime = timezone.now()
+        if logged_in_user.subscription_end_date is not None and current_datetime < logged_in_user.subscription_end_date:
+            subscription = True
+        else:
+            if Chat.objects.filter(user=uzer).count() > 10:
+             subscription = False
+            else:
+                subscription = True 
+            if subscription == False:   
+                answer = 'Subscription Expired. Please recharge to continue.'    
+             
+        return answer.replace('  ','\n').replace('\n','</br>') 
     except Exception as e:
         print(e)
         answer = ''
@@ -329,7 +340,7 @@ def chatbot(request):
     if logged_in_user.subscription_end_date is not None and current_datetime < logged_in_user.subscription_end_date:
         subscription = True
     else:
-     if Chat.objects.filter(user=request.user,message='uploaded document').count() > 5:
+     if Chat.objects.filter(user=request.user).count() > 10:
        subscription = False
      else:
         subscription = True  
@@ -452,7 +463,8 @@ def chatbot(request):
                     chat = Chat(user=request.user, message='uploaded document', response='Unsupported Document type', created_at=timezone.now())
                     chat.save()  
                     return redirect('/')      
-            return JsonResponse({'message': message, 'response': response})
+            return JsonResponse({'message': message, 'response': response})      
+    
     return render(request, 'chatbot.html', {'chats': chats,'subscription':subscription,'form': form})
 
 

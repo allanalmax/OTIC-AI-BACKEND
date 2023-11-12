@@ -7,7 +7,7 @@
     </button>
     <div style='height:20px;'></div>
     {% for kf in personprof %}
-    <h5>Subscription End: <span style='font-size:15px;color:green'>{{ kf.subscription_end_date  }}<span></h5>
+    <h5>Subscription End: <span style='font-size:15px;color:green'>{{ kf.subscription_end_date|default:"Free Trial"  }}<span></h5>
     {% endfor %}
     <form  method="post" style="max-width: 50em; margin: 0 auto;"> 
         {% for k in personuser %}

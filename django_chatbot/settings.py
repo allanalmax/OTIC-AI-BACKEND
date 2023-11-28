@@ -95,12 +95,14 @@ WSGI_APPLICATION = 'django_chatbot.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'somesai_personalised_learning',
+        #'NAME': 'somesai_personalised_learning',
+        'NAME': 'test',
       # 'USER': 'somesai_backend',
       # 'PASSWORD': '6732gwh76346gw762365t673455fsdgavacvVA',
       'USER':'oticsuperadmin',
       'PASSWORD':'j[maUIM=]C};D>K7',
-        'HOST': '34.29.52.253',
+       # 'HOST': '34.29.52.253',
+       'HOST': '45.56.117.142',
         'PORT': '5432',
     }
 }

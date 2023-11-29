@@ -1,4 +1,4 @@
-from os import name
+nofrom os import name
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
@@ -48,7 +48,7 @@ import pytesseract
 
 flut = FlutterwaveDetails.objects.get(id=1)
 
-openai_api_key = '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'
+openai_api_key = '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'
 
 openai.api_key = openai_api_key
 
